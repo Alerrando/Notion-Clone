@@ -15,7 +15,7 @@ export interface EditorProps {
 
 }
 
-export function Editor(){
+export function Editor() {
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -31,10 +31,18 @@ export function Editor(){
         }
     })
 
-    return(
-        <EditorContent
-            editor={editor}
-            className="max-w-[700px] mx-auto pt-16 prose"
-        />
+    return (
+        <>
+            <EditorContent
+                editor={editor}
+                className="max-w-[700px] mx-auto pt-16 prose prose-invert"
+            />
+
+            { editor && (
+                <BubbleMenu editor={editor}>
+                    <button>Bold</button>
+                </BubbleMenu>
+            ) }
+        </>
     )
 }
