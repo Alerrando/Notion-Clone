@@ -21,8 +21,8 @@ import {
   RxFontItalic,
   RxStrikethrough,
 } from "react-icons/rx";
-import { initialContet } from "./InitialContent";
 import { FloatingMenuShow } from "./FloatingMenuShow";
+import { initialContet } from "./InitialContent";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
@@ -80,7 +80,49 @@ export function Editor() {
 
             <Popover.Portal>
               <Popover.Content className="bg-zinc-700 py-2 px-1 gap-1 shadow-xl border border-zinc-600 shadow-black/20 rounded-lg overflow-hidden flex flex-col">
-                <FloatingMenuShow editor={editor} />
+                <FloatingMenuShow.Root>
+                  <FloatingMenuShow.Img
+                    src="https://www.notion.so/images/blocks/text/en-US.png"
+                    alt="Text"
+                    className="w-12 border border-zinc-600 rounded"
+                  />
+
+                  <FloatingMenuShow.TextInput
+                    texts={[
+                      {
+                        className: "text-sm text-zinc-50",
+                        text: "Text",
+                      },
+
+                      {
+                        className: "text-xs text-zinc-400",
+                        text: "Just start writing with plain text.",
+                      },
+                    ]}
+                  />
+                </FloatingMenuShow.Root>
+
+                <FloatingMenuShow.Root>
+                  <FloatingMenuShow.Img
+                    src="https://www.notion.so/images/blocks/header.57a7576a.png"
+                    alt="Heading"
+                    className="w-12 border border-zinc-600 rounded"
+                  />
+
+                  <FloatingMenuShow.TextInput
+                    texts={[
+                      {
+                        className: "text-sm text-zinc-50",
+                        text: "Heading 1",
+                      },
+
+                      {
+                        className: "text-xs text-zinc-400",
+                        text: "Big section heading.",
+                      },
+                    ]}
+                  />
+                </FloatingMenuShow.Root>
               </Popover.Content>
             </Popover.Portal>
           </Popover.Root>
