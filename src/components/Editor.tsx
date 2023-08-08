@@ -1,3 +1,4 @@
+import * as Popover from "@radix-ui/react-popover";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import {
@@ -11,6 +12,7 @@ import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
 import { lowlight } from "lowlight";
+import { LuSettings2 } from "react-icons/lu";
 import {
   RxChatBubble,
   RxChevronDown,
@@ -20,6 +22,7 @@ import {
   RxStrikethrough,
 } from "react-icons/rx";
 import { initialContet } from "./InitialContent";
+import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
@@ -64,40 +67,23 @@ export function Editor() {
 
             return currentLineText === "/";
           }}
-          className="bg-zinc-700 py-2 px-1 gap-1 shadow-xl border border-zinc-600 shadow-black/20 rounded-lg overflow-hidden flex flex-col"
         >
-          <button className="flex items-center gap-2 p-1 rounded min-w-[280px] hover:bg-zinc-600">
-            <img
-              src="https://www.notion.so/images/blocks/text/en-US.png"
-              alt="Text"
-              className="w-12 border border-zinc-600 rounded"
-            />
-            <div className="flex flex-col text-left">
-              <span className="text-sm">Text</span>
-              <span className="text-xs text-zinc-400">
-                Just start writing with plain text.
-              </span>
-            </div>
-          </button>
+          <Popover.Root>
+            <Popover.Trigger asChild>
+              <button
+                className="rounded-full w-[35px] h-[35px] inline-flex items-center justify-center text-violet11 bg-white shadow-[0_2px_10px] shadow-blackA7 hover:bg-violet3 focus:shadow-[0_0_0_2px] focus:shadow-black cursor-default outline-none"
+                aria-label="Update dimensions"
+              >
+                <LuSettings2 className="text-black" />
+              </button>
+            </Popover.Trigger>
 
-          <button
-            className="flex items-center gap-2 p-1 rounded min-w-[280px] hover:bg-zinc-600"
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 1 }).run()
-            }
-          >
-            <img
-              src="https://www.notion.so/images/blocks/header.57a7576a.png"
-              alt="Heading"
-              className="w-12 border border-zinc-600 rounded"
-            />
-            <div className="flex flex-col text-left">
-              <span className="text-sm">Heading 1</span>
-              <span className="text-xs text-zinc-400">
-                Big section heading.
-              </span>
-            </div>
-          </button>
+            <Popover.Portal>
+              <Popover.Content className="bg-zinc-700 py-2 px-1 gap-1 shadow-xl border border-zinc-600 shadow-black/20 rounded-lg overflow-hidden flex flex-col">
+                <FloatingMenuShow editor={editor} />
+              </Popover.Content>
+            </Popover.Portal>
+          </Popover.Root>
         </FloatingMenu>
       )}
 
