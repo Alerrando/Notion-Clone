@@ -1,7 +1,6 @@
 import { Editor } from "./components/Editor";
 
 export function App() {
-
   return (
     <div className="min-h-screen p-8 text-zinc-50 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400">
       <div className="bg-zinc-800 w-[1110px] mx-auto rounded-xl min-h-[720px] shadow-sm border-black/20 overflow-hidden grid grid-cols-[16rem_1fr]">
@@ -18,5 +17,5 @@ export function App() {
         </main>
       </div>
     </div>
-  )
+  );
 }
