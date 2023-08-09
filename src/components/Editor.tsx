@@ -54,7 +54,7 @@ export function Editor() {
     <>
       <EditorContent
         editor={editor}
-        className="max-w-[700px] mx-auto pt-16 prose prose-invert"
+        className="max-w-[700px] mr-[25%] ml-auto pt-16 prose prose-invert"
       />
 
       {editor && (

@@ -1,15 +1,12 @@
+import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 
 export function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 text-zinc-50 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-400">
-      <div className="bg-zinc-800 w-[1110px] mx-auto rounded-xl min-h-[720px] shadow-sm border-black/20 overflow-hidden grid grid-cols-[16rem_1fr]">
+    <div className="min-h-screen flex items-center justify-center text-zinc-50">
+      <div className="bg-zinc-800 w-full mx-auto rounded-xl min-h-[720px] shadow-sm border-black/20 overflow-hidden md:grid md:grid-cols-[16rem_1fr]">
         <aside className="bg-zinc-900 border-r border-r-zinc-700 p-4">
-          <div className="w-min flex gap-2 group">
-            <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-red-400"></button>
-            <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-yellow-400"></button>
-            <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-green-400"></button>
-          </div>
+          <Aside />
         </aside>
 
         <main className="p-4">

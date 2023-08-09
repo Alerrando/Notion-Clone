@@ -3,7 +3,7 @@ import { Texts } from "./Texts";
 
 type TextsInputProps = {
   className: string;
-  text: TimeRanges;
+  text: string;
 };
 
 type FloatingMenuTextsProps = {
