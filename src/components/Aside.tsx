@@ -1,7 +1,7 @@
 export function Aside() {
   return (
     <>
-      <div className="flex h-full flex-col justify-between border-e">
+      <div className="flex h-full flex-col justify-between border-e border-zinc-500">
         <div className="px-4 py-6">
           <div className="w-min flex gap-2 group">
             <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-red-400"></button>
@@ -13,7 +13,7 @@ export function Aside() {
             <li>
               <a
                 href=""
-                className="block rounded-lg bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700"
+                className="block rounded-lg py-2 text-xl font-medium text-gray-50"
               >
                 General
               </a>
@@ -21,7 +21,7 @@ export function Aside() {
 
             <li>
               <details className="group [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-700 hover:text-gray-50">
+                <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-300 hover:bg-gray-600 hover:text-gray-50">
                   <span className="text-sm font-medium"> Teams </span>
 
                   <span className="shrink-0 transition duration-300 group-open:-rotate-180">
@@ -44,7 +44,7 @@ export function Aside() {
                   <li>
                     <a
                       href=""
-                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-700 hover:text-gray-50"
+                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:text-gray-50"
                     >
                       Banned Users
                     </a>
@@ -53,7 +53,7 @@ export function Aside() {
                   <li>
                     <a
                       href=""
-                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-700 hover:text-gray-50"
+                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:text-gray-50"
                     >
                       Calendar
                     </a>
@@ -65,7 +65,7 @@ export function Aside() {
             <li>
               <a
                 href=""
-                className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-50"
+                className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:text-gray-50"
               >
                 Billing
               </a>
@@ -74,7 +74,7 @@ export function Aside() {
             <li>
               <a
                 href=""
-                className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-50"
+                className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:text-gray-50"
               >
                 Invoices
               </a>
@@ -82,7 +82,7 @@ export function Aside() {
 
             <li>
               <details className="group [&_summary::-webkit-details-marker]:hidden">
-                <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-50">
+                <summary className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-300 hover:bg-gray-600 hover:text-gray-50">
                   <span className="text-sm font-medium"> Account </span>
 
                   <span className="shrink-0 transition duration-300 group-open:-rotate-180">
@@ -105,7 +105,7 @@ export function Aside() {
                   <li>
                     <a
                       href=""
-                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-50"
+                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:text-gray-50"
                     >
                       Details
                     </a>
@@ -114,7 +114,7 @@ export function Aside() {
                   <li>
                     <a
                       href=""
-                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-50"
+                      className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-600 hover:text-gray-50"
                     >
                       Security
                     </a>
@@ -124,7 +124,7 @@ export function Aside() {
                     <form action="/logout">
                       <button
                         type="submit"
-                        className="w-full rounded-lg px-4 py-2 text-sm font-medium text-gray-500 [text-align:_inherit] hover:bg-gray-100 hover:text-gray-50"
+                        className="w-full rounded-lg px-4 py-2 text-sm font-medium text-gray-300 [text-align:_inherit] hover:bg-gray-600 hover:text-gray-50"
                       >
                         Logout
                       </button>
@@ -136,7 +136,7 @@ export function Aside() {
           </ul>
         </div>
 
-        <div className="sticky inset-x-0 bottom-0 border-t border-gray-100">
+        <div className="sticky inset-x-0 bottom-0 border-t border-gray-500">
           <a href="#" className="flex items-center gap-2 p-4 hover:bg-gray-50">
             <img
               alt="Man"
