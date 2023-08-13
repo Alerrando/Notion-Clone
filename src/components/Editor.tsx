@@ -12,6 +12,7 @@ import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
 import { lowlight } from "lowlight";
+import { useState } from "react";
 import { LuSettings2 } from "react-icons/lu";
 import {
   RxChatBubble,
@@ -30,6 +31,8 @@ lowlight.registerLanguage("js", js);
 export interface EditorProps {}
 
 export function Editor() {
+  const [currentEditor, setCurrentEditor] = useState<string>(initialContet);
+  const [editableTask, setEditableTask] = useState<boolean>(false);
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
   const editor = useEditor({
@@ -40,7 +43,12 @@ export function Editor() {
       }),
     ],
     onUpdate(editor) {
-      editor.editor.getJSON();
+      const currentEditorUpdate = editor.editor.getHTML();
+      if (currentEditorUpdate !== currentEditor) {
+        setEditableTask(true);
+      } else {
+        setEditableTask(false);
+      }
     },
     content: initialContet,
     editorProps: {
@@ -54,9 +62,19 @@ export function Editor() {
     <>
       <EditorContent
         editor={editor}
-        className="max-w-[700px] mr-[25%] ml-auto pt-16 prose prose-invert"
-      />
-
+        className="w-2/6 md:w-auto max-w-[700px] flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert"
+      >
+        {editableTask && (
+          <div className="w-full h-auto flex items-center justify-end">
+            <button
+              className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-white"
+              onClick={() => handleSaveEditTask()}
+            >
+              Salvar
+            </button>
+          </div>
+        )}
+      </EditorContent>
       {editor && (
         <FloatingMenu
           editor={editor}
@@ -201,4 +219,8 @@ export function Editor() {
       )}
     </>
   );
+
+  function handleSaveEditTask() {
+    setCurrentEditor(editor?.getHTML());
+  }
 }

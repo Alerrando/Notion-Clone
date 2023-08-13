@@ -1,12 +1,25 @@
-export function Aside() {
+import { AiOutlineCloseCircle } from "react-icons/ai";
+
+interface AsideProps {
+  setMenu: (menu: boolean) => void;
+}
+
+export function Aside({ setMenu }: AsideProps) {
   return (
     <>
       <div className="flex h-full flex-col justify-between border-e border-zinc-500">
         <div className="px-4 py-6">
-          <div className="w-min flex gap-2 group">
-            <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-red-400"></button>
-            <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-yellow-400"></button>
-            <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-green-400"></button>
+          <div className="w-full flex items-center justify-between">
+            <div className="w-min flex gap-2 group">
+              <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-red-400"></button>
+              <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-yellow-400"></button>
+              <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-green-400"></button>
+            </div>
+
+            <AiOutlineCloseCircle
+              className="w-7 h-7 cursor-pointer"
+              onClick={() => setMenu(false)}
+            />
           </div>
 
           <ul className="mt-6 space-y-1">
