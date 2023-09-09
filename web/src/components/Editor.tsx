@@ -62,12 +62,12 @@ export function Editor() {
     <>
       <EditorContent
         editor={editor}
-        className="w-2/6 md:w-auto max-w-[700px] flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert"
+        className="w-2/6 md:w-auto max-w-[700px] flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert text-black dark:text-white"
       >
         {editableTask && (
           <div className="w-full h-auto flex items-center justify-end">
             <button
-              className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-white"
+              className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 dark:text-white hover:text-white"
               onClick={() => handleSaveEditTask()}
             >
               Salvar
