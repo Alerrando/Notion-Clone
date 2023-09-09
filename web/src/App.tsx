@@ -1,28 +1,29 @@
 import { useState } from "react";
-import { FiMenu } from "react-icons/fi";
+import { twMerge } from "tailwind-merge";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 
+export const menuValuesDefault = {
+  valueMenuOff: "w-12",
+  valueMenuOn: "w-64",
+};
+
 export function App() {
-  const [menu, setMenu] = useState<boolean>(false);
+  const [menu, setMenu] = useState<string>(menuValuesDefault.valueMenuOff);
 
   return (
     <div className="min-h-screen flex items-center justify-center text-zinc-50 bg-white dark:bg-[#2e2e2f]">
       <div className="bg-zinc-100 dark:bg-zinc-800 md:bg-zinc-100 md:dark:bg-zinc-700 w-full md:w-11/12 h-screen md:h-[calc(100vh_-_16px)] mx-auto md:rounded-xl shadow-sm border-black/20 overflow-hidden grid grid-rows-[32px,97vh] md:grid-rows-none md:grid-cols-[16rem_1fr]">
-        {menu ? (
-          <div className="w-screen md:w-full h-screen fixed md:relative flex items-start justify-start bg-modal md:bg-transparent z-50">
-            <div className="w-64 h-full bg-zinc-100 dark:bg-zinc-800">
-              <Aside setMenu={setMenu} />
-            </div>
+        <div className="w-screen md:w-64 h-screen md:h-full fixed md:relative flex items-start justify-start bg-modal md:bg-zinc-100 md:dark:bg-zinc-800 z-50">
+          <div
+            className={twMerge(
+              "w-12 h-full bg-zinc-100 dark:bg-zinc-800 overflow-y-auto overflow-x-hidden",
+              menu,
+            )}
+          >
+            <Aside menu={menu} setMenu={setMenu} />
           </div>
-        ) : (
-          <div className="w-full h-7 md:h-full flex items-start justify-start py-2 px-4 md:p-4 bg-zinc-100 dark:bg-zinc-800">
-            <FiMenu
-              className="w-7 h-7 cursor-pointer text-black dark:text-white"
-              onClick={() => setMenu(true)}
-            />
-          </div>
-        )}
+        </div>
 
         <main className="py-4 md:p-4 bg-zinc-100 dark:bg-zinc-800 overflow-y-auto">
           <Editor />

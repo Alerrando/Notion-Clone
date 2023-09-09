@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.aside-menu > .input-menu:checked{
+    width: 32rem;
+}
