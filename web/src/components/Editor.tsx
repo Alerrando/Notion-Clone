@@ -55,7 +55,7 @@ export function Editor() {
     content: initialContet,
     editorProps: {
       attributes: {
-        class: "outline-none",
+        class: "h-full outline-none",
       },
     },
   });
@@ -64,7 +64,7 @@ export function Editor() {
     <>
       <EditorContent
         editor={editor}
-        className="w-2/6 md:w-auto max-w-[700px] flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert text-black dark:text-white"
+        className="w-2/3 md:w-auto md:max-w-[700px] h-[540px] flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert text-black dark:text-white"
       >
         {editableTask && (
           <div className="w-full h-auto flex items-center justify-end">
@@ -99,7 +99,7 @@ export function Editor() {
             </Popover.Trigger>
 
             <Popover.Portal>
-              <Popover.Content className="bg-zinc-700 py-2 px-1 gap-1 shadow-xl border border-zinc-600 shadow-black/20 rounded-lg overflow-hidden flex flex-col">
+              <Popover.Content className="bg-zinc-700 py-2 px-1 gap-1 shadow-xl border border-zinc-600 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-50">
                 <FloatingMenuShow.Root>
                   <FloatingMenuShow.Img
                     src="https://www.notion.so/images/blocks/text/en-US.png"
