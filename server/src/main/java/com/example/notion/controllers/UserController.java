@@ -14,12 +14,9 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
-    private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService){
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @GetMapping
     public List<User> findAll(){

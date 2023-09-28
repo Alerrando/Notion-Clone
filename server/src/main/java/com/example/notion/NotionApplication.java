@@ -1,12 +1,12 @@
 package com.example.notion;
 
-import com.example.notion.repositorys.UserMongoRepository;
+import com.example.notion.repositorys.UserRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@SpringBootApplication
-@EnableMongoRepositories(basePackageClasses = UserMongoRepository.class)
+@SpringBootApplication(exclude =  {DataSourceAutoConfiguration.class })
 
 public class NotionApplication {
 
