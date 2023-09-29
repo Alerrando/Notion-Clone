@@ -1,6 +1,7 @@
 package com.example.notion.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
 
 import java.util.List;
 
