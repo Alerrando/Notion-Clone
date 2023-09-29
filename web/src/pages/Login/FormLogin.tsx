@@ -1,3 +1,5 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
   AiFillFacebook,
   AiFillLinkedin,
@@ -7,42 +9,65 @@ import {
 import { MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
 import { Link } from "react-router-dom";
+import { z } from "zod";
+
+const createFormSchema = z.object({
+  name: z.string().nonempty("Digite seu nome"),
+  email: z.string().email().nonempty("Digite seu email"),
+  password: z.string().min(3).nonempty("Digite seu senha"),
+  annotations: z.array(),
+});
+
+export type CreateFormRegisterData = z.infer<typeof createFormSchema>;
+type CreateFormLoginData = Omit<CreateFormRegisterData, "name" | "annotations">;
 
 export function FormLogin() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateFormLoginData>({
+    resolver: zodResolver(createFormSchema),
+  });
   return (
-    <div className="h-screen w-full flex items-center justify-center">
-      <section className="h-4/5 w-4/5 mx-auto">
+    <div className="h-max md:h-screen w-full flex items-center justify-center">
+      <section className="h-full md:h-4/5 w-11/12 md:w-4/5 mx-auto">
         <header className="w-full flex flex-col text-center justify-center">
           <div className="w-full flex flex-row items-center justify-center gap-4">
-            <SiNotion size={36} />
-            <h1 className="text-4xl font-bold">Login</h1>
+            <SiNotion className="w-8 h-8 md:w-9 md:h-9" />
+            <h1 className="text-2xl md:text-4xl font-bold">Login</h1>
           </div>
 
           <h2>Bem Vindo de volta!</h2>
         </header>
 
-        <form action="" className="h-full py-16 flex flex-col gap-4">
-          <div className="w-full h-auto flex flex-col gap-8">
+        <form
+          className="h-full py-8 md:py-16 flex flex-col gap-4"
+          onSubmit={handleSubmit(submit)}
+        >
+          <div className="w-full h-auto flex flex-col gap-4 md:gap-8">
             <div className="w-full flex flex-col gap-1">
-              <span className="text-lg font-bold">Email</span>
+              <span className="text-base md:text-lg font-bold">Email</span>
               <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2">
                 <AiOutlineMail size={24} />
                 <input
                   type="text"
                   className="w-full h-full bg-transparent border-none outline-none"
                   placeholder="Digite seu e-mail"
+                  {...register("email")}
                 />
               </div>
             </div>
 
             <div className="w-full flex flex-col gap-1">
-              <span className="text-lg font-bold">Senha</span>
+              <span className="text-base md:text-lg font-bold">Senha</span>
               <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2">
                 <MdPassword size={24} />
                 <input
                   type="password"
                   className="w-full h-full bg-transparent border-none outline-none"
                   placeholder="Digite seu senha"
+                  {...register("password")}
                 />
               </div>
             </div>
@@ -59,7 +84,7 @@ export function FormLogin() {
               type="submit"
               className="w-full h-auto border border-green-600 px-12 py-2 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all"
             >
-              <span className="text-lg font-bold">Logar</span>
+              <span className="text-base md:text-lg font-bold">Logar</span>
             </button>
           </div>
 
@@ -89,4 +114,8 @@ export function FormLogin() {
       </section>
     </div>
   );
+
+  function submit(data: CreateFormLoginData) {
+    console.log(data);
+  }
 }
