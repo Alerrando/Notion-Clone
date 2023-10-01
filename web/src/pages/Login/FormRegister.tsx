@@ -12,22 +12,23 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const createFormSchema = z.object({
+  name: z.string().nonempty("Digite seu nome"),
   email: z.string().email().nonempty("Digite seu email"),
   password: z.string().min(3).nonempty("Digite seu senha"),
 });
 
-export type CreateFormLoginData = z.infer<typeof createFormSchema>;
+export type CreateFormRegisterData = z.infer<typeof createFormSchema>;
 
-type FormLoginProps = {
+type FormRegisterProps = {
   setPages: () => void;
 };
 
-export function FormLogin({ setPages }: FormLoginProps) {
+export function FormRegister({ setPages }: FormRegisterProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateFormLoginData>({
+  } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
   return (
@@ -128,7 +129,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
     </div>
   );
 
-  function submit(data: CreateFormLoginData) {
+  function submit(data: CreateFormRegisterData) {
     console.log(data);
   }
 }
