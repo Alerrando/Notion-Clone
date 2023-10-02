@@ -14,7 +14,7 @@ export function Login() {
       } md:grid-rows-none overflow-y-auto overflow-x-hidden ${animationClass}`}
     >
       <div
-        className={`h-full md:h-5/6 w-full flex items-center justify-center mb-auto ${
+        className={`h-full md:h-5/6 w-full flex items-center justify-center my-auto ${
           pages && "order-1"
         }`}
       >
