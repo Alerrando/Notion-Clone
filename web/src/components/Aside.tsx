@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  AiFillFolderOpen,
-  AiOutlineDoubleLeft,
-  AiOutlineDoubleRight,
-} from "react-icons/ai";
+import { AiFillFolderOpen, AiOutlineDoubleLeft, AiOutlineDoubleRight } from "react-icons/ai";
 import { BiTime } from "react-icons/bi";
 import { GoGear } from "react-icons/go";
 import { twMerge } from "tailwind-merge";
@@ -34,28 +30,17 @@ export function Aside() {
             <div
               className={twMerge(
                 "rounded-full cursor-pointer",
-                menu === "w-12"
-                  ? "w-[2rem] h-[2rem]"
-                  : "min-w-[3rem] min-h-[3rem]",
+                menu === "w-12" ? "w-[2rem] h-[2rem]" : "min-w-[3rem] min-h-[3rem]",
               )}
             >
               <img
                 src="undraw_male_avatar_g98d.svg"
                 alt="avatar user"
-                className={
-                  menu === "w-12"
-                    ? "w-full h-full"
-                    : "max-w-[3rem] max-h-[3rem]"
-                }
+                className={menu === "w-12" ? "w-full h-full" : "max-w-[3rem] max-h-[3rem]"}
               />
             </div>
 
-            <div
-              className={twMerge(
-                "w-min gap-2 group",
-                menu === "w-12" ? "hidden" : "flex items-end",
-              )}
-            >
+            <div className={twMerge("w-min gap-2 group", menu === "w-12" ? "hidden" : "flex items-end")}>
               <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-red-400"></button>
               <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-yellow-400"></button>
               <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-green-400"></button>
@@ -70,11 +55,7 @@ export function Aside() {
               )}
             >
               <AiFillFolderOpen className="min-w-[24px] min-h-[24px]" />
-              <span
-                className={twMerge("text-sm", menu === "w-12" && "invisible")}
-              >
-                Arquivos
-              </span>
+              <span className={twMerge("text-sm", menu === "w-12" && "invisible")}>Arquivos</span>
             </li>
 
             <li
@@ -84,11 +65,7 @@ export function Aside() {
               )}
             >
               <BiTime className="min-w-[24px] min-h-[24px]" />
-              <span
-                className={twMerge("text-sm", menu === "w-12" && "invisible")}
-              >
-                Mundaças Recentes
-              </span>
+              <span className={twMerge("text-sm", menu === "w-12" && "invisible")}>Mundaças Recentes</span>
             </li>
 
             <li
@@ -98,11 +75,7 @@ export function Aside() {
               )}
             >
               <GoGear className="min-w-[24px] min-h-[24px]" />
-              <span
-                className={twMerge("text-sm", menu === "w-12" && "invisible")}
-              >
-                Configurações
-              </span>
+              <span className={twMerge("text-sm", menu === "w-12" && "invisible")}>Configurações</span>
             </li>
           </ul>
         </div>

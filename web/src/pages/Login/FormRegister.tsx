@@ -1,12 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
-import {
-  AiFillFacebook,
-  AiFillLinkedin,
-  AiOutlineGoogle,
-  AiOutlineMail,
-} from "react-icons/ai";
+import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { IoPersonOutline } from "react-icons/io5";
 import { MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
@@ -48,15 +43,10 @@ export function FormRegister({ setPages }: FormRegisterProps) {
           <h2 className="text-black dark:text-white">Crie sua conta!</h2>
         </header>
 
-        <form
-          className="h-full py-6 flex flex-col gap-4"
-          onSubmit={handleSubmit(submit)}
-        >
+        <form className="h-full py-6 flex flex-col gap-4" onSubmit={handleSubmit(submit)}>
           <div className="w-full h-auto flex flex-col gap-4 md:gap-6">
             <div className="w-full flex flex-col gap-1">
-              <span className="text-base md:text-lg font-bold text-black dark:text-white">
-                Nome
-              </span>
+              <span className="text-base md:text-lg font-bold text-black dark:text-white">Nome</span>
               <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
                 <IoPersonOutline size={24} />
                 <input
@@ -66,15 +56,11 @@ export function FormRegister({ setPages }: FormRegisterProps) {
                   {...register("name")}
                 />
               </div>
-              {errors.email && (
-                <span className="text-red-600">{errors.email.message}</span>
-              )}
+              {errors.email && <span className="text-red-600">{errors.email.message}</span>}
             </div>
 
             <div className="w-full flex flex-col gap-1">
-              <span className="text-base md:text-lg font-bold text-black dark:text-white">
-                Email
-              </span>
+              <span className="text-base md:text-lg font-bold text-black dark:text-white">Email</span>
               <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
                 <AiOutlineMail size={24} />
                 <input
@@ -84,15 +70,11 @@ export function FormRegister({ setPages }: FormRegisterProps) {
                   {...register("email")}
                 />
               </div>
-              {errors.email && (
-                <span className="text-red-600">{errors.email.message}</span>
-              )}
+              {errors.email && <span className="text-red-600">{errors.email.message}</span>}
             </div>
 
             <div className="w-full flex flex-col gap-1">
-              <span className="text-base md:text-lg font-bold text-black dark:text-white">
-                Senha
-              </span>
+              <span className="text-base md:text-lg font-bold text-black dark:text-white">Senha</span>
               <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
                 <MdPassword size={24} />
                 <input
@@ -102,9 +84,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
                   {...register("password")}
                 />
               </div>
-              {errors.password && (
-                <span className="text-red-600">{errors.password.message}</span>
-              )}
+              {errors.password && <span className="text-red-600">{errors.password.message}</span>}
             </div>
           </div>
 
@@ -118,9 +98,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
           </div>
 
           <div className="w-full flex flex-row gap-1 items-center justify-start">
-            <span className="text-sm text-black dark:text-white">
-              Já tem uma conta?
-            </span>
+            <span className="text-sm text-black dark:text-white">Já tem uma conta?</span>
             <div
               onClick={() => setPages()}
               className="text-sm font-bold text-blue-800 dark:text-blue-400 cursor-pointer hover:underline hover:underline-offset-2"
@@ -159,7 +137,6 @@ export function FormRegister({ setPages }: FormRegisterProps) {
       ...rest,
     };
     const aux = await createRegister(info);
-    console.log(aux, aux instanceof AxiosError, info);
 
     if (!(aux instanceof AxiosError)) {
       toast.success("Você foi cadastrado com sucesso", {

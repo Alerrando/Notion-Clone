@@ -1,16 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import {
-  AiFillFacebook,
-  AiFillLinkedin,
-  AiOutlineGoogle,
-  AiOutlineMail,
-} from "react-icons/ai";
+import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
+import { getLogin } from "../../api";
 import { NotionContextProvider } from "../../context";
 
 const createFormSchema = z.object({
@@ -46,15 +45,10 @@ export function FormLogin({ setPages }: FormLoginProps) {
           <h2 className="text-black dark:text-white">Bem Vindo de volta!</h2>
         </header>
 
-        <form
-          className="h-full py-8 md:py-16 flex flex-col gap-4"
-          onSubmit={handleSubmit(submit)}
-        >
+        <form className="h-full py-8 md:py-16 flex flex-col gap-4" onSubmit={handleSubmit(submit)}>
           <div className="w-full h-auto flex flex-col gap-4 md:gap-8">
             <div className="w-full flex flex-col gap-1">
-              <span className="text-base md:text-lg font-bold text-black dark:text-white">
-                Email
-              </span>
+              <span className="text-base md:text-lg font-bold text-black dark:text-white">Email</span>
               <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
                 <AiOutlineMail size={24} />
                 <input
@@ -64,15 +58,11 @@ export function FormLogin({ setPages }: FormLoginProps) {
                   {...register("email")}
                 />
               </div>
-              {errors.email && (
-                <span className="text-red-600">{errors.email.message}</span>
-              )}
+              {errors.email && <span className="text-red-600">{errors.email.message}</span>}
             </div>
 
             <div className="w-full flex flex-col gap-1">
-              <span className="text-base md:text-lg font-bold text-black dark:text-white">
-                Senha
-              </span>
+              <span className="text-base md:text-lg font-bold text-black dark:text-white">Senha</span>
               <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
                 <MdPassword size={24} />
                 <input
@@ -82,9 +72,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
                   {...register("password")}
                 />
               </div>
-              {errors.password && (
-                <span className="text-red-600">{errors.password.message}</span>
-              )}
+              {errors.password && <span className="text-red-600">{errors.password.message}</span>}
             </div>
           </div>
 
@@ -107,9 +95,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
           </div>
 
           <div className="w-full flex flex-row gap-1 items-center justify-start">
-            <span className="text-sm text-black dark:text-white">
-              Ainda não tem conta?
-            </span>
+            <span className="text-sm text-black dark:text-white">Ainda não tem conta?</span>
             <div
               onClick={() => setPages()}
               className="text-sm font-bold text-blue-800 dark:text-blue-400 cursor-pointer hover:underline hover:underline-offset-2"
@@ -135,10 +121,40 @@ export function FormLogin({ setPages }: FormLoginProps) {
           </div>
         </form>
       </section>
+
+      <ToastContainer />
     </div>
   );
 
-  function submit(data: CreateFormLoginData) {
-    console.log(data);
+  async function submit(data: CreateFormLoginData) {
+    const aux = await getLogin(data);
+
+    toastMessage(aux);
+  }
+
+  function toastMessage(message) {
+    if (!(message instanceof AxiosError)) {
+      toast.success("Você foi cadastrado com sucesso", {
+        position: "bottom-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      toast.error("Erro ao fazer login!", {
+        position: "bottom-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
   }
 }

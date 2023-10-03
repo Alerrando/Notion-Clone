@@ -1,12 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import {
-  BubbleMenu,
-  EditorContent,
-  FloatingMenu,
-  useEditor,
-} from "@tiptap/react";
+import { BubbleMenu, EditorContent, FloatingMenu, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
@@ -14,14 +9,7 @@ import "highlight.js/styles/panda-syntax-dark.css";
 import { lowlight } from "lowlight";
 import { useState } from "react";
 import { LuSettings2 } from "react-icons/lu";
-import {
-  RxChatBubble,
-  RxChevronDown,
-  RxCode,
-  RxFontBold,
-  RxFontItalic,
-  RxStrikethrough,
-} from "react-icons/rx";
+import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrikethrough } from "react-icons/rx";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 import { initialContet } from "./InitialContent";
 
@@ -31,9 +19,7 @@ lowlight.registerLanguage("js", js);
 export interface EditorProps {}
 
 export function Editor() {
-  const [currentEditor, setCurrentEditor] = useState<string | undefined>(
-    initialContet,
-  );
+  const [currentEditor, setCurrentEditor] = useState<string | undefined>(initialContet);
   const [editableTask, setEditableTask] = useState<boolean>(false);
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
@@ -157,20 +143,12 @@ export function Editor() {
             defaultValue="text"
             aria-label="Menu Bubble Item"
           >
-            <ToggleGroup.Item
-              value="text"
-              aria-label="Text Item"
-              className={toggleGroupItemClasses}
-            >
+            <ToggleGroup.Item value="text" aria-label="Text Item" className={toggleGroupItemClasses}>
               Text
               <RxChevronDown className="w-4 h-4" />
             </ToggleGroup.Item>
 
-            <ToggleGroup.Item
-              value="comment"
-              aria-label="Comment Item"
-              className={toggleGroupItemClasses}
-            >
+            <ToggleGroup.Item value="comment" aria-label="Comment Item" className={toggleGroupItemClasses}>
               Comment
               <RxChatBubble className="w-4 h-4" />
             </ToggleGroup.Item>
