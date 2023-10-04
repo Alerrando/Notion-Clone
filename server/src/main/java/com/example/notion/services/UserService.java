@@ -20,8 +20,10 @@ public class UserService {
     public ResponseEntity<Object> findUser(String email, String password){
         Optional<User> optional = userRepository.findUser(email);
         Map<String, Object> response = new HashMap<>();
+        User user = optional.get();
 
-        if(!optional.isEmpty()){
+
+        if(!optional.isEmpty() && user.getPassword().equals(password)){
             response.put("usuario", optional.get());
             return ResponseEntity.ok().body(response);
         }
