@@ -2,8 +2,10 @@ package com.example.notion.controllers;
 
 import com.example.notion.entities.User;
 import com.example.notion.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/find/{email}/{password}")
-    public ResponseEntity<Object> findUser(@PathVariable String email, @PathVariable String password){
+    public ResponseEntity<Object> findUser(@Valid @PathVariable String email, @Valid @PathVariable String password){
         return userService.findUser(email, password);
     }
 

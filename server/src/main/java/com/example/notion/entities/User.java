@@ -18,17 +18,20 @@ public class User {
 
     private String password;
 
+    private Integer level;
+
     @OneToMany
     private List<Annotation> annotations;
 
     public User(){
     }
 
-    public User(Integer id, String name, String email, String password, List<Annotation> annotations){
+    public User(Integer id, String name, String email, String password, Integer level,List<Annotation> annotations){
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.level = level;
         this.annotations = annotations;
     }
 
@@ -62,6 +65,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public List<Annotation> getAnnotations() {
