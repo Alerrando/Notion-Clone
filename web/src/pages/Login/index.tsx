@@ -13,7 +13,11 @@ export function Login() {
         !pages ? "md:grid-cols-[60%_40%]" : "md:grid-cols-[40%_60%]"
       } md:grid-rows-none overflow-y-auto overflow-x-hidden ${animationClass}`}
     >
-      <div className={`h-full md:h-5/6 w-full flex items-center justify-center my-auto ${pages && "order-1"}`}>
+      <div
+        className={`h-full md:h-5/6 w-full flex items-center justify-center my-auto ${
+          pages && "md:order-1"
+        } overflow-hidden`}
+      >
         <img
           src={!pages ? "aside-login-princ.png" : "aside-register-princ.png"}
           alt=""

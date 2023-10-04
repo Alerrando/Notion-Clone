@@ -23,6 +23,11 @@ type FormLoginProps = {
   setPages: () => void;
 };
 
+type ToastMessageData = {
+  message: string;
+  status: string;
+};
+
 export function FormLogin({ setPages }: FormLoginProps) {
   const {
     register,
@@ -31,7 +36,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
   } = useForm<CreateFormLoginData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { users } = useContext(NotionContextProvider);
+  const { setUsers } = useContext(NotionContextProvider);
 
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
@@ -127,34 +132,30 @@ export function FormLogin({ setPages }: FormLoginProps) {
   );
 
   async function submit(data: CreateFormLoginData) {
-    const aux = await getLogin(data);
+    const message = await getLogin(data);
 
-    toastMessage(aux);
+    const toastMessage: ToastMessageData = {
+      message: !(message instanceof AxiosError) ? "Login feito com sucesso" : "Erro ao fazer login!",
+      status: !(message instanceof AxiosError) ? "success" : "error",
+    };
+
+    if (!(message instanceof AxiosError)) {
+      setUsers(message.usuario);
+    }
+
+    toastMessageLogin(toastMessage);
   }
 
-  function toastMessage(message) {
-    if (!(message instanceof AxiosError)) {
-      toast.success("Você foi cadastrado com sucesso", {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      toast.error("Erro ao fazer login!", {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    }
+  function toastMessageLogin(toastMessage: ToastMessageData) {
+    toast[toastMessage.status](toastMessage.message, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   }
 }
