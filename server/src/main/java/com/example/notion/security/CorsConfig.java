@@ -9,12 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Override
     public void addCorsMapping(CorsRegistry config){
         config.addMapping("/security/**")
-                .allowCredentials(true)
-                .allowedHeaders("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedOrigins("http://localhost:5173/");
+                .allowedHeaders("*") //Define uma lista de header que uma solicitação pode ter como permitido uma solicitação real.
+                .allowedMethods("GET", "POST", "PUT", "DELETE") //Define os métodos HTTP
+                .allowedOrigins("http://localhost:5173/") //Define uma ou mais url origem que pode fazer uma requisição
+                .allowCredentials(true); // Se o navegador deve enviar credenciais, como cookies, junto com solicitações entre domínios.
     }
 }
