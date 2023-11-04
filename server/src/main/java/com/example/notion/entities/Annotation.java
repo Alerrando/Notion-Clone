@@ -2,11 +2,8 @@ package com.example.notion.entities;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "annotation")
+@Embeddable
 public class Annotation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;

@@ -32,7 +32,19 @@ public class UserService {
         return ResponseEntity.notFound().build();
     }
 
-    public User create(User user){
-        return userRepository.save(user);
+    public ResponseEntity create(User user){
+        try {
+            Optional<User> optional = userRepository.findUser(user.getEmail());
+
+            if(optional.isPresent()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário Já Cadastrado");
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.save(user));
+            }
+        }
+        catch (RuntimeException runtimeException){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
+        }
     }
 }

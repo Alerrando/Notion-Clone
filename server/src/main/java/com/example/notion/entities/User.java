@@ -20,7 +20,7 @@ public class User {
 
     private Integer level;
 
-    @OneToMany
+    @ElementCollection
     private List<Annotation> annotations;
 
     public User(){

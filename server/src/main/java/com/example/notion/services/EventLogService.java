@@ -1,14 +1,12 @@
 package com.example.notion.services;
 
 import com.example.notion.entities.EventLog;
-import com.example.notion.entities.EventLogDTO;
 import com.example.notion.entities.User;
 import com.example.notion.repositorys.EventLogRepository;
 import com.example.notion.repositorys.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

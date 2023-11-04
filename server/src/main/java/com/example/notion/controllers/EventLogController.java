@@ -1,13 +1,11 @@
 package com.example.notion.controllers;
 
 import com.example.notion.entities.EventLog;
-import com.example.notion.entities.EventLogDTO;
 import com.example.notion.services.EventLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
