@@ -11,5 +11,5 @@ import java.util.List;
 @Repository
 public interface EventLogRepository extends MongoRepository<EventLog, Integer> {
     @Query("{ 'id': ?0 }")
-    List<EventLog> finbById(@Param("id") Integer id);
+    List<EventLog> findUserEventById(@Param("id") Integer id);
 }

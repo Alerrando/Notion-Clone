@@ -1,6 +1,7 @@
 package com.example.notion.controllers;
 
 import com.example.notion.entities.EventLog;
+import com.example.notion.entities.EventLogDTO;
 import com.example.notion.services.EventLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -8,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping(value = "/security/event-log")
+@RequestMapping(value = "/event-log")
 public class EventLogController {
     @Autowired
     private EventLogService eventLogService;
@@ -21,12 +22,12 @@ public class EventLogController {
     }
 
     @GetMapping("/{id}")
-    public Optional<EventLog> findById(@PathVariable Integer id){
+    public List<EventLog> findById(@PathVariable Integer id){
         return eventLogService.findById(id);
     }
 
     @PostMapping
-    public EventLog create(@RequestBody Integer id, @RequestBody String eventType, @RequestBody String eventDetails){
-        return eventLogService.create(id, eventType, eventDetails);
+    public EventLog create(@RequestBody EventLog EventLog){
+        return eventLogService.create(EventLog);
     }
 }

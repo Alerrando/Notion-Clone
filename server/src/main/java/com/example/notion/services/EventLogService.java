@@ -1,6 +1,7 @@
 package com.example.notion.services;
 
 import com.example.notion.entities.EventLog;
+import com.example.notion.entities.EventLogDTO;
 import com.example.notion.entities.User;
 import com.example.notion.repositorys.EventLogRepository;
 import com.example.notion.repositorys.UserRepository;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,17 +24,13 @@ public class EventLogService {
         return eventLogRepository.findAll();
     }
 
-    public Optional<EventLog> findById(Integer id){
-        return eventLogRepository.findById(id);
+    public List<EventLog> findById(Integer id){
+        return eventLogRepository.findUserEventById(id);
     }
 
-    public EventLog create(Integer id, String eventType, String eventDetail){
-        EventLog eventLog = new EventLog();
-        Optional<User> user = userRepository.findById(id);
-        eventLog.setUser(user.get());
-        eventLog.setTimestamp(LocalDateTime.now());
-        eventLog.setEventType(eventType);
-        eventLog.setEventDetails(eventDetail);
+    public EventLog create(EventLog eventLog){
+        Optional<User> user = userRepository.findById(eventLog.getId());
+        eventLog.setTimestamp(new Date());
 
         return eventLogRepository.save(eventLog);
     }

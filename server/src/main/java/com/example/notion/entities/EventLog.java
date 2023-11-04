@@ -3,6 +3,7 @@ package com.example.notion.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "event_log")
@@ -15,15 +16,14 @@ public class EventLog {
     @ManyToOne
     private User user;
 
-    private LocalDateTime timestamp;
+    private Date timestamp;
     private String eventType;
     private String eventDetails;
 
-    public EventLog(){
+    public EventLog() {
     }
 
-    public EventLog(Integer id, User user, LocalDateTime timestamp, String eventType, String eventDetails) {
-        this.id = id;
+    public EventLog(User user, Date timestamp, String eventType, String eventDetails) {
         this.user = user;
         this.timestamp = timestamp;
         this.eventType = eventType;
@@ -46,11 +46,11 @@ public class EventLog {
         this.user = user;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
