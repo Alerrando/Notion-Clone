@@ -25,7 +25,7 @@ public class UserService {
 
 
         if(!optional.isEmpty() && optional.get().getPassword().equals(password)){
-            response.put("usuario", optional.get());
+            response.put("usuario", optional.get().getId());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         }
 
