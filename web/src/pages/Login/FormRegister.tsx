@@ -8,8 +8,8 @@ import { SiNotion } from "react-icons/si";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
-import { createRegister } from "../../api";
-import { UserProps } from "../../context";
+import { createEventLog, createRegister } from "../../api";
+import { EventLog, UserProps } from "../../context";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -52,7 +52,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
                 <input
                   type="text"
                   className="w-full h-full bg-transparent border-none outline-none"
-                  placeholder="Digite seu e-mail"
+                  placeholder="Digite seu nome"
                   {...register("name")}
                 />
               </div>
@@ -134,9 +134,21 @@ export function FormRegister({ setPages }: FormRegisterProps) {
     const info: UserProps = {
       id: 0,
       annotations: [],
+      level: 2,
       ...rest,
     };
-    const aux = await createRegister(info);
+    const aux: UserProps | AxiosError = await createRegister(info);
+    const dataLog: EventLog = {
+      id: 0,
+      user: aux.data,
+      timestamp: Date.now(),
+      eventType: "Registro",
+      eventDetails: `Id: ${aux.data.id} - Nome: ${aux.data.name} - Email: ${aux.data.email}`,
+    };
+
+    const auxLog = await createEventLog(dataLog);
+
+    console.log(auxLog);
 
     if (!(aux instanceof AxiosError)) {
       toast.success("Você foi cadastrado com sucesso", {

@@ -9,26 +9,29 @@ export type UserProps = {
   name: string;
   email: string;
   password: string;
+  level: number;
   annotaions: [];
 };
 
-type ContextProps = {
-  users: UserProps[];
-  setUsers: (users: UserProps[]) => void;
+export type EventLog = {
+  id: number;
+  user: UserProps;
+  timestamp: Date;
+  eventType: string;
+  eventDetails: string;
 };
 
-export const NotionContextProvider = createContext<ContextProps>(
-  {} as ContextProps,
-);
+type ContextProps = {
+  userId: number;
+  setUserId: (users: number) => void;
+};
+
+export const NotionContextProvider = createContext<ContextProps>({} as ContextProps);
 
 function CreateContextProvider({ children }: IPropsContext) {
-  const [users, setUsers] = useState<UserProps[]>([]);
+  const [userId, setUserId] = useState<number>([]);
 
-  return (
-    <NotionContextProvider.Provider value={{ users, setUsers }}>
-      {children}
-    </NotionContextProvider.Provider>
-  );
+  return <NotionContextProvider.Provider value={{ userId, setUserId }}>{children}</NotionContextProvider.Provider>;
 }
 
 export default CreateContextProvider;
