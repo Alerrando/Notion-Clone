@@ -1,50 +1,75 @@
 package com.example.notion.services;
 
+import com.example.notion.entities.AuthenticationDTO;
 import com.example.notion.entities.User;
 import com.example.notion.repositorys.UserRepository;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.*;
 
 @Service
-public class UserService {
+@Validated
+public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TokenService tokenService;
+
 
     public List<User> findAll(){
         return userRepository.findAll();
     }
 
-    public ResponseEntity<Object> findUser(String email, String password){
-        Optional<User> optional = userRepository.findUser(email);
-        Map<String, Object> response = new HashMap<>();
+    public ResponseEntity findUser(AuthenticationDTO authenticationDTO, AuthenticationManager authenticationManager) throws UsernameNotFoundException {
+        var userEmailPassword = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.password());
+        var auth = authenticationManager.authenticate(userEmailPassword);
 
+        var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        if(!optional.isEmpty() && optional.get().getPassword().equals(password)){
-            response.put("usuario", optional.get().getId());
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
-        }
-
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
     }
 
-    public ResponseEntity create(User user){
+    public ResponseEntity create(@Valid User user){
         try {
-            Optional<User> optional = userRepository.findUser(user.getEmail());
+            if(user.getName() != null && user.getEmail() != null && user.getUsername() != null && user.getRole() != null){
+                UserDetails optional = userRepository.findUser(user.getEmail());
 
-            if(optional.isPresent()){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário Já Cadastrado");
+                if(optional != null && optional.equals(user)){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário Já Cadastrado");
+                }
+                else {
+                    String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+                    user.setPassword(encryptedPassword);
+
+                    return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.save(user));
+                }
             }
-            else {
-                return ResponseEntity.status(HttpStatus.CREATED).body(userRepository.save(user));
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Alguns dados estão faltando");
             }
         }
         catch (RuntimeException runtimeException){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findUser(username);
     }
 }

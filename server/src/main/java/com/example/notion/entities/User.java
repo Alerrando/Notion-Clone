@@ -1,24 +1,37 @@
 package com.example.notion.entities;
 
+import com.example.notion.Enum.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.NotFound;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
+    @NotBlank(message = "O nome é obrigatório")
     private String name;
 
+    @NotBlank(message = "O email é obrigatório")
+    @Email(message = "O email deve ser válido")
     private String email;
 
+    @NotBlank(message = "A senha é obrigatória")
     private String password;
 
-    private Integer level;
+    @NotBlank(message = "A senha é obrigatória")
+    private UserRole role;
 
     @ElementCollection
     private List<Annotation> annotations;
@@ -26,20 +39,20 @@ public class User {
     public User(){
     }
 
-    public User(Integer id, String name, String email, String password, Integer level,List<Annotation> annotations){
+    public User(String id, String name, String email, String password, UserRole role,List<Annotation> annotations){
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.level = level;
+        this.role = role;
         this.annotations = annotations;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -59,20 +72,16 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public Integer getLevel() {
-        return level;
+    public UserRole getRole() {
+        return role;
     }
 
-    public void setLevel(Integer level) {
-        this.level = level;
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public List<Annotation> getAnnotations() {
@@ -81,5 +90,44 @@ public class User {
 
     public void setAnnotations(List<Annotation> annotations) {
         this.annotations = annotations;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if(this.role == UserRole.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        else{
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getUsername() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

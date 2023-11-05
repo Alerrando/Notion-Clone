@@ -1,11 +1,14 @@
 package com.example.notion.controllers;
 
-import com.example.notion.entities.LevelRequired;
+import com.example.notion.entities.AuthenticationDTO;
 import com.example.notion.entities.User;
 import com.example.notion.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,27 +17,27 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping(value = "/security/user")
+@RequestMapping(value = "/user")
 public class UserController {
-
     @Autowired
     private UserService userService;
 
-    @LevelRequired(1)
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @GetMapping
     public List<User> findAll(){
         return userService.findAll();
     }
 
-    @LevelRequired(2)
-    @GetMapping("/find/{email}/{password}")
-    public ResponseEntity<Object> findUser(@Valid @PathVariable String email, @Valid @PathVariable String password){
-        return userService.findUser(email, password);
+    @GetMapping("/find")
+    public ResponseEntity findUser(@Valid @RequestBody AuthenticationDTO authenticationDTO){
+        return userService.findUser(authenticationDTO, authenticationManager);
     }
 
-    @LevelRequired(2)
     @PostMapping
-    public ResponseEntity create(@RequestBody User user){
+    public ResponseEntity create(@RequestBody @Valid User user){
         return userService.create(user);
     }
+
 }
