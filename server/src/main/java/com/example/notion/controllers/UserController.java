@@ -30,8 +30,8 @@ public class UserController {
         return userService.findAll();
     }
 
-    @GetMapping("/find")
-    public ResponseEntity findUser(@Valid @RequestBody AuthenticationDTO authenticationDTO){
+    @PostMapping("/find")
+    public ResponseEntity findUser(@RequestBody @Valid AuthenticationDTO authenticationDTO){
         return userService.findUser(authenticationDTO, authenticationManager);
     }
 

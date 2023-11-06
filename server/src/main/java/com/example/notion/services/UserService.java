@@ -35,13 +35,22 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public ResponseEntity findUser(AuthenticationDTO authenticationDTO, AuthenticationManager authenticationManager) throws UsernameNotFoundException {
-        var userEmailPassword = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.password());
-        var auth = authenticationManager.authenticate(userEmailPassword);
+    public ResponseEntity findUser(AuthenticationDTO authenticationDTO, AuthenticationManager authenticationManager) {
+        try {
+            Map<String, Object> response = new HashMap<>();
+            UserDetails user = userRepository.findUser(authenticationDTO.email());
+            var userEmailPassword = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.password());
+            var auth = authenticationManager.authenticate(userEmailPassword);
 
-        var token = tokenService.generateToken((User) auth.getPrincipal());
+            var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(token);
+            response.put("token", token);
+            response.put("user", user);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
+
     }
 
     public ResponseEntity create(@Valid User user){
