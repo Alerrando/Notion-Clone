@@ -10,8 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
-import { createEventLog, createRegister } from "../../api";
-import { EventLog, NotionContextProvider, UserProps, UserValueDefault } from "../../context";
+import { createEventLog, createRegister } from "../../../api";
+import { EventLog, NotionContextProvider, UserProps, UserValueDefault } from "../../../context";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
