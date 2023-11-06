@@ -5,20 +5,34 @@ type IPropsContext = {
 };
 
 export type UserProps = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   password: string;
   level: number;
-  annotaions: [];
+  annotations: [];
 };
 
 export type EventLog = {
-  id: number;
+  id: string;
   user: UserProps;
   timestamp: Date;
   eventType: string;
   eventDetails: string;
+};
+
+export type AuthenticationDTO = {
+  email: string;
+  password: string;
+};
+
+export const UserValueDefault: UserProps = {
+  id: "0",
+  name: "",
+  email: "",
+  password: "",
+  level: 0,
+  annotations: [],
 };
 
 type ContextProps = {
@@ -29,7 +43,7 @@ type ContextProps = {
 export const NotionContextProvider = createContext<ContextProps>({} as ContextProps);
 
 function CreateContextProvider({ children }: IPropsContext) {
-  const [userId, setUserId] = useState<number>([]);
+  const [userId, setUserId] = useState<string>([]);
 
   return <NotionContextProvider.Provider value={{ userId, setUserId }}>{children}</NotionContextProvider.Provider>;
 }

@@ -36,7 +36,9 @@ export function FormLogin({ setPages }: FormLoginProps) {
   } = useForm<CreateFormLoginData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUserId } = useContext(NotionContextProvider);
+  const { setUserId, userId } = useContext(NotionContextProvider);
+
+  console.log(userId);
 
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
@@ -132,14 +134,16 @@ export function FormLogin({ setPages }: FormLoginProps) {
   );
 
   async function submit(data: CreateFormLoginData) {
-    const message = await getLogin(data);
+    const message: string | AxiosError = await getLogin(data);
+
     const toastMessage: ToastMessageData = {
       message: !(message instanceof AxiosError) ? "Login feito com sucesso" : "Erro ao fazer login!",
       status: !(message instanceof AxiosError) ? "success" : "error",
     };
 
     if (!(message instanceof AxiosError)) {
-      setUserId(message.usuario);
+      setUserId(message.data.user.id);
+      localStorage.setItem("token-user", message.data.token);
     }
 
     toastMessageLogin(toastMessage);

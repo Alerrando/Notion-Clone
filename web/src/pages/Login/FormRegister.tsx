@@ -1,15 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { IoPersonOutline } from "react-icons/io5";
 import { MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { createEventLog, createRegister } from "../../api";
-import { EventLog, UserProps } from "../../context";
+import { EventLog, NotionContextProvider, UserProps, UserValueDefault } from "../../context";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -31,6 +33,9 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
+  const { setUserId } = useContext(NotionContextProvider);
+  const navigate = useNavigate();
+
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
       <section className="h-full md:h-4/5 w-11/12 md:w-4/5 mx-auto">
@@ -131,36 +136,54 @@ export function FormRegister({ setPages }: FormRegisterProps) {
 
   async function submit(data: CreateFormRegisterData) {
     const { ...rest } = data;
-    const info: UserProps = {
-      id: 0,
-      annotations: [],
-      level: 2,
+    const infoUserValues: UserProps = {
+      ...UserValueDefault,
       ...rest,
     };
-    const aux: UserProps | AxiosError = await createRegister(info);
-    const dataLog: EventLog = {
-      id: 0,
-      user: aux.data,
-      timestamp: Date.now(),
-      eventType: "Registro",
-      eventDetails: `Id: ${aux.data.id} - Nome: ${aux.data.name} - Email: ${aux.data.email}`,
-    };
+    const responseRegister: UserProps | AxiosError = await createRegister(infoUserValues);
 
-    const auxLog = await createEventLog(dataLog);
+    if (!(responseRegister instanceof AxiosError)) {
+      const dataLog: EventLog = {
+        id: "0",
+        user: responseRegister.data,
+        timestamp: Date.now(),
+        eventType: "Registro",
+        eventDetails: `Id: ${responseRegister.data.id} - Nome: ${responseRegister.data.name} - Email: ${responseRegister.data.email}`,
+      };
 
-    console.log(auxLog);
-
-    if (!(aux instanceof AxiosError)) {
-      toast.success("Você foi cadastrado com sucesso", {
-        position: "bottom-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      await createEventLog(dataLog);
+      setUserId(responseRegister.data.id);
+      setTimeout(() => {
+        navigate("/editor");
+      }, 5000);
     }
+
+    toastMessage(responseRegister);
+  }
+}
+
+function toastMessage(aux: UserProps | AxiosError) {
+  if (aux instanceof AxiosError) {
+    toast.error(aux.response?.data, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  } else {
+    toast.success("Você foi cadastrado com sucesso", {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   }
 }

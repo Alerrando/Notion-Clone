@@ -1,14 +1,13 @@
 import axios from "axios";
-import { CreateFormLoginData } from "../pages/Login/FormLogin";
+import { AuthenticationDTO, EventLog } from "../context";
 import { CreateFormRegisterData } from "../pages/Login/FormRegister";
-import { EventLog } from "../context";
 
-const api = "http://localhost:8080";
+const api = "http://localhost:9090";
 
-export function getLogin(user: CreateFormLoginData) {
+export function getLogin(user: AuthenticationDTO) {
   const aux = axios
-    .get(`${api}/user/find/${user.email}/${user.password}`)
-    .then((response) => response.data)
+    .post(`${api}/user/find`, user)
+    .then((response) => response)
     .catch((error) => error);
 
   return aux;
@@ -43,7 +42,6 @@ export function getEventLogById(id: number) {
 }
 
 export function createEventLog(dataLog: EventLog) {
-  console.log(dataLog);
   const aux = axios
     .post(`${api}/event-log`, dataLog)
     .then((response) => response)
