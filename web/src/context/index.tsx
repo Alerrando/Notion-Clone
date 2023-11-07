@@ -1,29 +1,9 @@
 import React, { createContext, useState } from "react";
+import { createEventLog } from "../api";
+import { EventLog, UserDTOProps, UserProps } from "./typesContext";
 
 type IPropsContext = {
   children: React.ReactNode;
-};
-
-export type UserProps = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  level: number;
-  annotations: [];
-};
-
-export type EventLog = {
-  id: string;
-  user: UserProps;
-  timestamp: Date;
-  eventType: string;
-  eventDetails: string;
-};
-
-export type AuthenticationDTO = {
-  email: string;
-  password: string;
 };
 
 export const UserValueDefault: UserProps = {
@@ -33,19 +13,43 @@ export const UserValueDefault: UserProps = {
   password: "",
   level: 0,
   annotations: [],
+  role: "USER",
+};
+
+const UserDTOValuesDefault: UserDTOProps = {
+  id: "0",
+  role: "USER",
+  annotations: [],
 };
 
 type ContextProps = {
-  userId: number;
-  setUserId: (users: number) => void;
+  user: UserDTOProps;
+  setUser: (users: UserDTOProps) => void;
+  EventLogRegister: (data: UserProps, eventTypeData: string, eventDetailsData: string) => void;
 };
 
 export const NotionContextProvider = createContext<ContextProps>({} as ContextProps);
 
 function CreateContextProvider({ children }: IPropsContext) {
-  const [userId, setUserId] = useState<string>([]);
+  const [user, setUser] = useState<UserDTOProps>(UserDTOValuesDefault);
 
-  return <NotionContextProvider.Provider value={{ userId, setUserId }}>{children}</NotionContextProvider.Provider>;
+  async function EventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
+    const dataLog: EventLog = {
+      id: "0",
+      user: data,
+      timestamp: Date.now(),
+      eventType: eventTypeData,
+      eventDetails: eventDetailsData,
+    };
+
+    await createEventLog(dataLog);
+  }
+
+  return (
+    <NotionContextProvider.Provider value={{ user, setUser, EventLogRegister }}>
+      {children}
+    </NotionContextProvider.Provider>
+  );
 }
 
 export default CreateContextProvider;

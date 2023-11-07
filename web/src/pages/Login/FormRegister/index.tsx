@@ -10,8 +10,9 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
-import { createEventLog, createRegister } from "../../../api";
-import { EventLog, NotionContextProvider, UserProps, UserValueDefault } from "../../../context";
+import { createRegister } from "../../../api";
+import { NotionContextProvider, UserValueDefault } from "../../../context";
+import { ToastMessageData, TokenUser, UserProps } from "../../../context/typesContext";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -33,7 +34,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUserId } = useContext(NotionContextProvider);
+  const { setUser, EventLogRegister } = useContext(NotionContextProvider);
   const navigate = useNavigate();
 
   return (
@@ -140,19 +141,20 @@ export function FormRegister({ setPages }: FormRegisterProps) {
       ...UserValueDefault,
       ...rest,
     };
-    const responseRegister: UserProps | AxiosError = await createRegister(infoUserValues);
+    const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
 
     if (!(responseRegister instanceof AxiosError)) {
-      const dataLog: EventLog = {
-        id: "0",
-        user: responseRegister.data,
-        timestamp: Date.now(),
-        eventType: "Registro",
-        eventDetails: `Id: ${responseRegister.data.id} - Nome: ${responseRegister.data.name} - Email: ${responseRegister.data.email}`,
-      };
+      await EventLogRegister(
+        responseRegister.data,
+        "Registro",
+        `Id: ${responseRegister.data.id} - Nome: ${responseRegister.data.name} - Email: ${responseRegister.data.email}`,
+      );
 
-      await createEventLog(dataLog);
-      setUserId(responseRegister.data.id);
+      setUser({
+        id: responseRegister.data.id,
+        annotations: responseRegister.data.annotations,
+        role: responseRegister.data.role,
+      });
       setTimeout(() => {
         navigate("/editor");
       }, 5000);
@@ -162,28 +164,19 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   }
 }
 
-function toastMessage(aux: UserProps | AxiosError) {
-  if (aux instanceof AxiosError) {
-    toast.error(aux.response?.data, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  } else {
-    toast.success("Você foi cadastrado com sucesso", {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  }
+function toastMessage(aux: TokenUser | AxiosError) {
+  const toastMessage: ToastMessageData = {
+    message: !(aux instanceof AxiosError) ? "Você foi cadastrado com sucesso" : aux.response?.data,
+    status: !(aux instanceof AxiosError) ? "success" : "error",
+  };
+  toast[toastMessage.status](toastMessage.message, {
+    position: "bottom-left",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+  });
 }

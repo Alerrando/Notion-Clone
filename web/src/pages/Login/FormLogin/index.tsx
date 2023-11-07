@@ -9,8 +9,9 @@ import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
-import { getLogin } from "../../api";
-import { NotionContextProvider } from "../../context";
+import { getLogin } from "../../../api";
+import { NotionContextProvider } from "../../../context";
+import { ToastMessageData, TokenUser } from "../../../context/typesContext";
 
 const createFormSchema = z.object({
   email: z.string().email().nonempty("Digite seu email"),
@@ -23,11 +24,6 @@ type FormLoginProps = {
   setPages: () => void;
 };
 
-type ToastMessageData = {
-  message: string;
-  status: string;
-};
-
 export function FormLogin({ setPages }: FormLoginProps) {
   const {
     register,
@@ -36,9 +32,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
   } = useForm<CreateFormLoginData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUserId, userId } = useContext(NotionContextProvider);
-
-  console.log(userId);
+  const { setUser, EventLogRegister } = useContext(NotionContextProvider);
 
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
@@ -134,22 +128,32 @@ export function FormLogin({ setPages }: FormLoginProps) {
   );
 
   async function submit(data: CreateFormLoginData) {
-    const message: string | AxiosError = await getLogin(data);
-
-    const toastMessage: ToastMessageData = {
-      message: !(message instanceof AxiosError) ? "Login feito com sucesso" : "Erro ao fazer login!",
-      status: !(message instanceof AxiosError) ? "success" : "error",
-    };
+    const message: TokenUser | AxiosError = await getLogin(data);
 
     if (!(message instanceof AxiosError)) {
-      setUserId(message.data.user.id);
+      setUser({
+        id: message.data.id,
+        annotations: message.data.annotations,
+        role: message.data.role,
+      });
       localStorage.setItem("token-user", message.data.token);
+
+      await EventLogRegister(
+        message.data,
+        "Login",
+        `Id: ${message.data.id} - Nome: ${message.data.name} - Email: ${message.data.email}`,
+      );
     }
 
-    toastMessageLogin(toastMessage);
+    toastMessageLogin(message);
   }
 
-  function toastMessageLogin(toastMessage: ToastMessageData) {
+  function toastMessageLogin(message: TokenUser | AxiosError) {
+    const toastMessage: ToastMessageData = {
+      message: !(message instanceof AxiosError) ? "Login feito com sucesso" : message.response?.data,
+      status: !(message instanceof AxiosError) ? "success" : "error",
+    };
+    console.log(toastMessage);
     toast[toastMessage.status](toastMessage.message, {
       position: "bottom-left",
       autoClose: 5000,
