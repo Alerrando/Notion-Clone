@@ -22,9 +22,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
     @GetMapping
     public List<User> findAll(){
         return userService.findAll();
@@ -32,12 +29,11 @@ public class UserController {
 
     @PostMapping("/find")
     public ResponseEntity findUser(@RequestBody @Valid AuthenticationDTO authenticationDTO){
-        return userService.findUser(authenticationDTO, authenticationManager);
+        return userService.findUser(authenticationDTO);
     }
 
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid User user){
         return userService.create(user);
     }
-
 }
