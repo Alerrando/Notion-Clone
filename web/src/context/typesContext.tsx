@@ -5,6 +5,11 @@ export type ToastMessageData = {
 
 type RoleProps = "USER" | "ADMIN";
 
+export type RouterRole = {
+  path: string;
+  role: RoleProps;
+};
+
 export type UserProps = {
   id: string;
   name: string;

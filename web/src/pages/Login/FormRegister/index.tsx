@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
-import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { IoPersonOutline } from "react-icons/io5";
@@ -11,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { createRegister } from "../../../api";
-import { NotionContextProvider, UserValueDefault } from "../../../context";
+import { UserValueDefault, useNotionContext } from "../../../context";
 import { ToastMessageData, TokenUser, UserProps } from "../../../context/typesContext";
 
 const createFormSchema = z.object({
@@ -34,7 +33,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUser, EventLogRegister } = useContext(NotionContextProvider);
+  const { addUser, EventLogRegister } = useNotionContext((state) => [state.addUser, state.EventLogRegister]);
   const navigate = useNavigate();
 
   return (
@@ -150,7 +149,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
         `Id: ${responseRegister.data.id} - Nome: ${responseRegister.data.name} - Email: ${responseRegister.data.email}`,
       );
 
-      setUser({
+      addUser({
         id: responseRegister.data.id,
         annotations: responseRegister.data.annotations,
         role: responseRegister.data.role,

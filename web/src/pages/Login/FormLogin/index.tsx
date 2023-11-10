@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
-import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { MdPassword } from "react-icons/md";
@@ -10,8 +9,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { getLogin } from "../../../api";
-import { NotionContextProvider } from "../../../context";
-import { ToastMessageData, TokenUser } from "../../../context/typesContext";
+import { useNotionContext } from "../../../context";
+import { ToastMessageData, TokenUser, UserDTOProps } from "../../../context/typesContext";
 
 const createFormSchema = z.object({
   email: z.string().email().nonempty("Digite seu email"),
@@ -32,7 +31,12 @@ export function FormLogin({ setPages }: FormLoginProps) {
   } = useForm<CreateFormLoginData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUser, EventLogRegister } = useContext(NotionContextProvider);
+  const { addUser, EventLogRegister } = useNotionContext((context) => {
+    return {
+      addUser: context.addUser,
+      EventLogRegister: context.EventLogRegister,
+    };
+  });
 
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
@@ -131,17 +135,18 @@ export function FormLogin({ setPages }: FormLoginProps) {
     const message: TokenUser | AxiosError = await getLogin(data);
 
     if (!(message instanceof AxiosError)) {
-      setUser({
-        id: message.data.id,
-        annotations: message.data.annotations,
-        role: message.data.role,
-      });
-      localStorage.setItem("token-user", message.data.token);
+      const aux: UserDTOProps = {
+        id: message.data.user.id,
+        annotations: message.data.user.annotations,
+        role: message.data.user.role,
+      };
+      addUser(aux);
 
+      localStorage.setItem("token-user", message.data.token);
       await EventLogRegister(
-        message.data,
+        message.data.user,
         "Login",
-        `Id: ${message.data.id} - Nome: ${message.data.name} - Email: ${message.data.email}`,
+        `Id: ${message.data.user.id} - Nome: ${message.data.user.name} - Email: ${message.data.user.email}`,
       );
     }
 
@@ -153,7 +158,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
       message: !(message instanceof AxiosError) ? "Login feito com sucesso" : message.response?.data,
       status: !(message instanceof AxiosError) ? "success" : "error",
     };
-    console.log(toastMessage);
+
     toast[toastMessage.status](toastMessage.message, {
       position: "bottom-left",
       autoClose: 5000,

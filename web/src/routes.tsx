@@ -1,6 +1,18 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Login } from "./pages/Login";
 import { App } from "./App";
+import { RouterRole } from "./context/typesContext";
+import { Login } from "./pages/Login";
+
+export const routesRole: RouterRole[] = [
+  {
+    path: "/editor",
+    role: "USER",
+  },
+  {
+    path: "/",
+    role: "",
+  },
+];
 
 export function Router() {
   return (
