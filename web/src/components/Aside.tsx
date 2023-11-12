@@ -16,7 +16,7 @@ export function Aside() {
     <>
       <div
         className={twMerge(
-          "w-full h-full flex flex-col justify-between border-e border-zinc-500 transition-all duration-1000",
+          "w-full h-full flex flex-col justify-between dark:bg-zinc-800 border-e border-zinc-500 transition-all duration-1000",
           menu === "w-12" ? "w-12" : "w-64",
         )}
       >

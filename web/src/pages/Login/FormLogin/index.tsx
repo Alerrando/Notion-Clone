@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
+import { useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { MdPassword } from "react-icons/md";
@@ -9,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { getLogin } from "../../../api";
-import { useNotionContext } from "../../../context";
+import { StoreContext } from "../../../context";
 import { ToastMessageData, TokenUser, UserDTOProps } from "../../../context/typesContext";
 
 const createFormSchema = z.object({
@@ -31,12 +32,18 @@ export function FormLogin({ setPages }: FormLoginProps) {
   } = useForm<CreateFormLoginData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { addUser, EventLogRegister } = useNotionContext((context) => {
-    return {
-      addUser: context.addUser,
-      EventLogRegister: context.EventLogRegister,
-    };
-  });
+  const useStore = useContext(StoreContext);
+  const { user, setUser, EventLogRegister } = useStore();
+
+  console.log(user);
+
+  useEffect(() => {
+    if (user.id.length > 0) {
+      setTimeout(() => {
+        window.location.href = "/editor";
+      }, 5000);
+    }
+  }, [user]);
 
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
@@ -140,7 +147,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
         annotations: message.data.user.annotations,
         role: message.data.user.role,
       };
-      addUser(aux);
+      setUser(aux);
 
       localStorage.setItem("token-user", message.data.token);
       await EventLogRegister(
@@ -149,7 +156,6 @@ export function FormLogin({ setPages }: FormLoginProps) {
         `Id: ${message.data.user.id} - Nome: ${message.data.user.name} - Email: ${message.data.user.email}`,
       );
     }
-
     toastMessageLogin(message);
   }
 

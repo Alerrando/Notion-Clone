@@ -10,8 +10,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { createRegister } from "../../../api";
-import { UserValueDefault, useNotionContext } from "../../../context";
+import { UserValueDefault } from "../../../context";
 import { ToastMessageData, TokenUser, UserProps } from "../../../context/typesContext";
+import { useGlobalStore } from "../../../context/useGlobalStore";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -33,7 +34,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { addUser, EventLogRegister } = useNotionContext((state) => [state.addUser, state.EventLogRegister]);
+  const { setUser, EventLogRegister } = useGlobalStore();
   const navigate = useNavigate();
 
   return (
@@ -149,7 +150,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
         `Id: ${responseRegister.data.id} - Nome: ${responseRegister.data.name} - Email: ${responseRegister.data.email}`,
       );
 
-      addUser({
+      setUser({
         id: responseRegister.data.id,
         annotations: responseRegister.data.annotations,
         role: responseRegister.data.role,

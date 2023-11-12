@@ -1,14 +1,12 @@
-import { motion } from "framer-motion"; // Importe motion do framer-motion
+import { useContext } from "react";
+import { motion } from "framer-motion";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
-import { useNotionContext } from "./context";
+import { StoreContext } from "./context";
 
 export function App() {
-  const { user } = useNotionContext((context) => {
-    return {
-      user: context.user,
-    };
-  });
+  const useStore = useContext(StoreContext);
+  const { user } = useStore();
 
   console.log(user);
 
@@ -21,12 +19,14 @@ export function App() {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <div className={"w-full h-full bg-zinc-100 dark:bg-zinc-800 overflow-y-auto overflow-x-hidden duration-1000"}>
+          <div
+            className={"w-full h-full bg-zinc-100 dark:bg-[#2e2e2f] overflow-y-auto overflow-x-hidden duration-1000"}
+          >
             <Aside />
           </div>
         </motion.div>
 
-        <main className="w-full h-full py-4 md:p-4 bg-zinc-100 dark:bg-zinc-800 overflow-y-auto">
+        <main className="w-full h-full py-4 md:p-4 bg-zinc-100 dark:bg-[#2e2e2f] overflow-y-auto">
           <Editor />
         </main>
       </div>

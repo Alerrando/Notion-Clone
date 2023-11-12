@@ -15,11 +15,7 @@ export function getLogin(user: AuthenticationDTO) {
 
 export function createRegister(info: CreateFormRegisterData) {
   const aux = axios
-    .post(`${api}/user`, info, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token-user")}`,
-      },
-    })
+    .post(`${api}/user`, info)
     .then((response) => response)
     .catch((error) => error);
 
