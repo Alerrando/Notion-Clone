@@ -36,3 +36,9 @@ body, main{
 .aside-menu > .input-menu:checked {
     width: 32rem;
 }
+
+@media (prefers-color-scheme: dark){
+    body{
+        background-color: rgb(39 39 42);
+    }
+}

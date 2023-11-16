@@ -9,7 +9,7 @@ export function Login() {
 
   return (
     <main
-      className={`md:h-screen bg-[#f5f5f5] grid grid-rows-[35%_75%] ${
+      className={`md:h-screen bg-[#f5f5f5] grid grid-rows-[35%_75%] dark:bg-zinc-800 ${
         !pages ? "md:grid-cols-[60%_40%]" : "md:grid-cols-[40%_60%]"
       } md:grid-rows-none overflow-y-auto overflow-x-hidden ${animationClass}`}
     >
