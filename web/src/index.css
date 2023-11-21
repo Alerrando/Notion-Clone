@@ -37,8 +37,13 @@ h1, h2, h3, h3, h4, h5, h6, span, p, li {
     animation: slideToRight 0.6s ease-in-out;
 }
 
-.aside-menu > .input-menu:checked {
-    width: 32rem;
+.aside-menu-true{
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    width: 100vw;
 }
 
 @media (prefers-color-scheme: dark){
