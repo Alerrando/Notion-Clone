@@ -10,7 +10,7 @@ export type RouterRole = {
   role: RoleProps;
 };
 
-type AnnotationType = {
+export type AnnotationType = {
   id: string;
   title: string;
   content: string;

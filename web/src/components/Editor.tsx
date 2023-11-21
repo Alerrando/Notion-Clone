@@ -7,11 +7,13 @@ import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
 import { lowlight } from "lowlight";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { LuSettings2 } from "react-icons/lu";
 import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrikethrough } from "react-icons/rx";
+import { StoreContext } from "../context";
+import { AnnotationType, UserDTOProps } from "../context/typesContext";
 import { FloatingMenuShow } from "./FloatingMenuShow";
-import { initialContet } from "./InitialContent";
+import { initialContent } from "./InitialContent";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
@@ -19,7 +21,9 @@ lowlight.registerLanguage("js", js);
 export interface EditorProps {}
 
 export function Editor() {
-  const [currentEditor, setCurrentEditor] = useState<string | undefined>(initialContet);
+  const useStore = useContext(StoreContext);
+  const { user, setUser } = useStore();
+  const [currentEditor, setCurrentEditor] = useState<string | undefined>(initialContent);
   const [editableTask, setEditableTask] = useState<boolean>(false);
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
@@ -38,7 +42,7 @@ export function Editor() {
         setEditableTask(false);
       }
     },
-    content: initialContet,
+    content: initialContent,
     editorProps: {
       attributes: {
         class: "h-full outline-none",
@@ -206,5 +210,22 @@ export function Editor() {
 
   function handleSaveEditTask() {
     setCurrentEditor(editor?.getHTML());
+    const date = new Date();
+
+    const arrayCurrent: string[] = editor
+      ?.getHTML()
+      .split(/<(\/?\w+)>/)
+      .filter(Boolean);
+    const userAux: UserDTOProps = user;
+    const infosContext: AnnotationType = {
+      title: arrayCurrent[1],
+      content: editor?.getHTML(),
+      createdBy: date.toUTCString(),
+      lastUpdate: date.toUTCString(),
+    };
+
+    userAux.annotations.push(infosContext);
+
+    setUser(user);
   }
 }

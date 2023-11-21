@@ -53,7 +53,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
           <div className="w-full h-auto flex flex-col gap-4 md:gap-6">
             <div className="w-full flex flex-col gap-1">
               <span className="text-base md:text-lg font-bold text-black dark:text-white">Nome</span>
-              <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
+              <div className="flex flex-row items-center gap-4 border border-zinc-400 rounded-lg px-2 py-2 text-black dark:text-white">
                 <IoPersonOutline size={24} />
                 <input
                   type="text"
@@ -67,7 +67,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
 
             <div className="w-full flex flex-col gap-1">
               <span className="text-base md:text-lg font-bold text-black dark:text-white">Email</span>
-              <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
+              <div className="flex flex-row items-center gap-4 border border-zinc-400 rounded-lg px-2 py-2 text-black dark:text-white">
                 <AiOutlineMail size={24} />
                 <input
                   type="text"
@@ -81,7 +81,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
 
             <div className="w-full flex flex-col gap-1">
               <span className="text-base md:text-lg font-bold text-black dark:text-white">Senha</span>
-              <div className="flex flex-row items-center gap-4 border rounded-lg px-2 py-2 text-black dark:text-white">
+              <div className="flex flex-row items-center gap-4 border border-zinc-400 rounded-lg px-2 py-2 text-black dark:text-white">
                 <MdPassword size={24} />
                 <input
                   type="password"

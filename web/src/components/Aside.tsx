@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { AiFillFolderOpen } from "react-icons/ai";
 import { BiTime } from "react-icons/bi";
 import { FiMenu } from "react-icons/fi";
-import { GoGear } from "react-icons/go";
+import { GoChevronRight, GoGear } from "react-icons/go";
+import { IoDocumentTextOutline } from "react-icons/io5";
 import { IconType } from "react-icons/lib";
 import { MdClose } from "react-icons/md";
+import { StoreContext } from "../context";
+import { AnnotationType } from "../context/typesContext";
 import { AsideMenu } from "./AsideMenu";
 
 export type MenuListType = {
@@ -14,6 +17,8 @@ export type MenuListType = {
 };
 
 export function Aside() {
+  const useStore = useContext(StoreContext);
+  const { user } = useStore();
   const [menu, setMenu] = useState<boolean>(false);
 
   const menuList: MenuListType = [
@@ -46,7 +51,7 @@ export function Aside() {
         <div
           className={`hidden md:w-64 md:h-full md:flex flex-col justify-between dark:bg-zinc-800 border-e border-zinc-500 transition-all duration-500 md:absolute md:top-0 md:-left-full group-hover:left-0 aside-menu-${menu}`}
         >
-          <div className="w-auto h-full flex flex-col gap-8 py-6 overflow-x-hidden">
+          <div className="w-auto h-auto flex flex-col gap-12 py-6 overflow-x-hidden">
             <div className="w-[95%] h-auto flex flex-row gap-4 items-center justify-between px-4">
               <div className="rounded-full cursor-pointer min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem]">
                 <img src="user.svg" alt="avatar user" className="w-full h-full" />
@@ -66,12 +71,18 @@ export function Aside() {
 
             <AsideMenu menuList={menuList} />
 
-            <ul className="h-full w-full flex flex-col gap-1 text-black dark:text-white px-2">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
+            <ul className="h-auto w-full flex flex-col gap-1 text-black dark:text-white px-2">
+              {user.annotations.map((contextUser: AnnotationType) => (
+                <>
+                  <li className="flex flex-row items-center bg-zinc-200 justify-start gap-1 py-0.5 px-1 rounded-md cursor-pointer">
+                    <GoChevronRight size={16} />
+                    <div className="flex flex-row items-center justify-start gap-1">
+                      <IoDocumentTextOutline size={18} className="text-zinc-600" />
+                      <span className="text-sm font-semibold">{contextUser?.title}</span>
+                    </div>
+                  </li>
+                </>
+              ))}
             </ul>
           </div>
         </div>
