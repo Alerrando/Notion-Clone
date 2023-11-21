@@ -1,10 +1,12 @@
 package com.example.notion.services;
 
+import com.example.notion.entities.Annotation;
 import com.example.notion.entities.AuthenticationDTO;
 import com.example.notion.entities.User;
 import com.example.notion.repositorys.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,12 +62,11 @@ public class UserService implements UserDetailsService {
         try {
             User optional = (User) userRepository.findUser(user.getEmail());
             Map<String, Object> response = new HashMap<>();
-            if(optional.equals(user)){
+            if(optional == null || optional.equals(user)){
                 String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
                 user.setPassword(encryptedPassword);
-                var userEmailPassword = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
-                var auth = this.authenticationManager.authenticate(userEmailPassword);
-                var token = tokenService.generateToken((User) auth.getPrincipal());
+                user.setId(UUID.randomUUID().toString());
+                var token = tokenService.generateToken(user);
 
                 response.put("token", token);
                 response.put("user", user);
@@ -77,6 +78,25 @@ public class UserService implements UserDetailsService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário Já Cadastrado");
         }
         catch (RuntimeException runtimeException){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
+        }
+    }
+
+    public ResponseEntity updateAnnotation(List<Annotation> annotations, String idUser){
+        try {
+            Optional<User> user = userRepository.findById(idUser);
+            Map<String, Object> response = new HashMap<>();
+
+            if(user.isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
+            }
+            user.get().setAnnotations(annotations);
+
+            response.put("user", user.get());
+            response.put("status", "Página atualizada com sucesso!");
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        } catch (RuntimeException runtimeException){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
         }
     }

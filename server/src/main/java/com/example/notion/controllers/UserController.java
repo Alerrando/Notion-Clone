@@ -1,5 +1,6 @@
 package com.example.notion.controllers;
 
+import com.example.notion.entities.Annotation;
 import com.example.notion.entities.AuthenticationDTO;
 import com.example.notion.entities.User;
 import com.example.notion.services.UserService;
@@ -35,5 +36,10 @@ public class UserController {
     @PostMapping
     public ResponseEntity create(@RequestBody @Valid User user){
         return userService.create(user);
+    }
+
+    @PutMapping
+    public ResponseEntity updateAnnotation(@RequestBody @Valid List<Annotation> annotations, @RequestBody @Valid String id){
+        return userService.updateAnnotation(annotations, id);
     }
 }

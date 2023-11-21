@@ -2,21 +2,31 @@ package com.example.notion.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 @Embeddable
 public class Annotation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private Integer id;
 
-    private String name;
+    private String title;
 
-    private String description;
+    private String content;
+
+    private Date lastUpdate;
+
+    private Date createdBy;
 
     public Annotation(){
     }
 
-    public Annotation(Integer id, String name, String description){
+    public Annotation(Integer id, String title, String content, Date lastUpdate, Date createdBy) {
         this.id = id;
-        this.name = name;
-        this.description = description;
+        this.title = title;
+        this.content = content;
+        this.lastUpdate = lastUpdate;
+        this.createdBy = createdBy;
     }
 
     public Integer getId() {
@@ -27,19 +37,35 @@ public class Annotation {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getContent() {
+        return content;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public Date getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Date createdBy) {
+        this.createdBy = createdBy;
     }
 }
