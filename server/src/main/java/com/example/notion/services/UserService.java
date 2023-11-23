@@ -2,6 +2,7 @@ package com.example.notion.services;
 
 import com.example.notion.entities.Annotation;
 import com.example.notion.entities.AuthenticationDTO;
+import com.example.notion.entities.EventLog;
 import com.example.notion.entities.User;
 import com.example.notion.repositorys.UserRepository;
 import jakarta.validation.Valid;
@@ -32,6 +33,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private EventLogService eventLogService;
+
 
     public List<User> findAll(){
         return userRepository.findAll();
@@ -48,6 +52,9 @@ public class UserService implements UserDetailsService {
 
                 response.put("token", token);
                 response.put("user", user);
+
+                EventLog eventLog = new EventLog(user, new Date(),"Login", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
+                eventLogService.create(eventLog);
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
             }
 
@@ -71,6 +78,9 @@ public class UserService implements UserDetailsService {
                 response.put("token", token);
                 response.put("user", user);
                 userRepository.save(user);
+
+                EventLog eventLog = new EventLog(user, new Date(),"Registro", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
+                eventLogService.create(eventLog);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
