@@ -34,7 +34,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUser, EventLogRegister } = useGlobalStore();
+  const { setUser } = useGlobalStore();
   const navigate = useNavigate();
 
   return (
@@ -144,12 +144,6 @@ export function FormRegister({ setPages }: FormRegisterProps) {
     const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
 
     if (!(responseRegister instanceof AxiosError)) {
-      await EventLogRegister(
-        responseRegister.data,
-        "Registro",
-        `Id: ${responseRegister.data.id} - Nome: ${responseRegister.data.name} - Email: ${responseRegister.data.email}`,
-      );
-
       setUser({
         id: responseRegister.data.id,
         annotations: responseRegister.data.annotations,

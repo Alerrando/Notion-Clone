@@ -33,7 +33,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
     resolver: zodResolver(createFormSchema),
   });
   const useStore = useContext(StoreContext);
-  const { user, setUser, EventLogRegister } = useStore();
+  const { user, setUser } = useStore();
 
   useEffect(() => {
     if (user.id.length > 0) {
@@ -148,11 +148,6 @@ export function FormLogin({ setPages }: FormLoginProps) {
       setUser(aux);
 
       localStorage.setItem("token-user", message.data.token);
-      await EventLogRegister(
-        message.data.user,
-        "Login",
-        `Id: ${message.data.user.id} - Nome: ${message.data.user.name} - Email: ${message.data.user.email}`,
-      );
     }
     toastMessageLogin(message);
   }
