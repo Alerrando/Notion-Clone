@@ -53,7 +53,7 @@ public class UserService implements UserDetailsService {
                 response.put("token", token);
                 response.put("user", user);
 
-                EventLog eventLog = new EventLog(user, new Date(),"Login", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
+                EventLog eventLog = new EventLog(0, user, new Date(),"Login", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
                 eventLogService.create(eventLog);
                 return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
             }
@@ -79,7 +79,7 @@ public class UserService implements UserDetailsService {
                 response.put("user", user);
                 userRepository.save(user);
 
-                EventLog eventLog = new EventLog(user, new Date(),"Registro", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
+                EventLog eventLog = new EventLog(0, user, new Date(),"Registro", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
                 eventLogService.create(eventLog);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);

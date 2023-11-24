@@ -8,7 +8,7 @@ import java.util.Date;
 public class Annotation {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Integer id;
+    private String id;
 
     private String title;
 
@@ -21,7 +21,7 @@ public class Annotation {
     public Annotation(){
     }
 
-    public Annotation(Integer id, String title, String content, Date lastUpdate, Date createdBy) {
+    public Annotation(String id, String title, String content, Date lastUpdate, Date createdBy) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -29,11 +29,11 @@ public class Annotation {
         this.createdBy = createdBy;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

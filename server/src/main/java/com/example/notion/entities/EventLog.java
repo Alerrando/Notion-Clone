@@ -23,7 +23,8 @@ public class EventLog {
     public EventLog() {
     }
 
-    public EventLog(User user, Date timestamp, String eventType, String eventDetails) {
+    public EventLog(Integer id, User user, Date timestamp, String eventType, String eventDetails) {
+        this.id = id;
         this.user = user;
         this.timestamp = timestamp;
         this.eventType = eventType;
