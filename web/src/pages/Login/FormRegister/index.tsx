@@ -141,8 +141,8 @@ export function FormRegister({ setPages }: FormRegisterProps) {
       ...UserValueDefault,
       ...rest,
     };
-    const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
 
+    const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
     if (!(responseRegister instanceof AxiosError)) {
       setUser({
         id: responseRegister.data.id,

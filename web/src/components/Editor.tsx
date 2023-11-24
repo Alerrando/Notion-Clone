@@ -8,11 +8,11 @@ import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
 import { lowlight } from "lowlight";
 import { useContext, useState } from "react";
-import uuid from "react-uuid";
 import { LuSettings2 } from "react-icons/lu";
 import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrikethrough } from "react-icons/rx";
+import uuid from "react-uuid";
 import { StoreContext } from "../context";
-import { AnnotationType, UserDTOProps } from "../context/typesContext";
+import { AnnotationType } from "../context/typesContext";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 import { initialContent } from "./InitialContent";
 
@@ -210,7 +210,6 @@ export function Editor() {
   );
 
   function handleSaveEditTask() {
-    debugger;
     setCurrentEditor(editor?.getHTML());
     const date = new Date();
 
@@ -218,7 +217,6 @@ export function Editor() {
       ?.getHTML()
       .split(/<(\/?\w+)>/)
       .filter(Boolean);
-    const userAux: UserDTOProps = user;
     const infosContext: AnnotationType = {
       id: uuid(),
       title: arrayCurrent[1],
@@ -226,11 +224,15 @@ export function Editor() {
       createdBy: date.toUTCString(),
       lastUpdate: date.toUTCString(),
     };
-    const annontationsAux = user.annotations;
-    console.log(annontationsAux);
 
-    userAux.annotations.push(infosContext);
+    const userAux = user.annotations.map((annotation: AnnotationType) => {
+      if (annotation.id === infosContext.id) {
+        return infosContext;
+      }
 
-    setUser(user);
+      return annotation;
+    });
+
+    setUser(userAux);
   }
 }
