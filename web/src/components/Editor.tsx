@@ -3,18 +3,20 @@ import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { BubbleMenu, EditorContent, FloatingMenu, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { AxiosError } from "axios";
 import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
 import { lowlight } from "lowlight";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LuSettings2 } from "react-icons/lu";
 import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrikethrough } from "react-icons/rx";
-import uuid from "react-uuid";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { updateAnnotation } from "../api";
 import { StoreContext } from "../context";
-import { AnnotationType } from "../context/typesContext";
+import { AnnotationType, ToastMessageData } from "../context/typesContext";
 import { FloatingMenuShow } from "./FloatingMenuShow";
-import { initialContent } from "./InitialContent";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
@@ -24,7 +26,10 @@ export interface EditorProps {}
 export function Editor() {
   const useStore = useContext(StoreContext);
   const { user, setUser } = useStore();
-  const [currentEditor, setCurrentEditor] = useState<string | undefined>(initialContent);
+  const { id } = useParams();
+  const [currentEditor, setCurrentEditor] = useState<string | undefined>(
+    user.annotations.find((annotation: AnnotationType) => annotation.id === id).content,
+  );
   const [editableTask, setEditableTask] = useState<boolean>(false);
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
@@ -43,7 +48,7 @@ export function Editor() {
         setEditableTask(false);
       }
     },
-    content: initialContent,
+    content: currentEditor,
     editorProps: {
       attributes: {
         class: "h-full outline-none",
@@ -51,11 +56,21 @@ export function Editor() {
     },
   });
 
+  useEffect(() => {
+    const newContent = user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content;
+    setCurrentEditor(newContent);
+    setEditableTask(false);
+    if (editor && newContent) {
+      editor.chain().setContent(newContent).run();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, user.annotations]);
+
   return (
     <>
       <EditorContent
         editor={editor}
-        className="w-2/3 md:w-auto md:max-w-[65%] h-full flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert text-black dark:text-white"
+        className="w-2/3 md:w-auto md:max-w-[65%] h-auto flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert text-black dark:text-white"
       >
         {editableTask && (
           <div className="w-full h-auto flex items-center justify-end">
@@ -209,30 +224,49 @@ export function Editor() {
     </>
   );
 
-  function handleSaveEditTask() {
-    setCurrentEditor(editor?.getHTML());
-    const date = new Date();
+  async function handleSaveEditTask() {
+    const currentContent = editor?.getHTML();
 
     const arrayCurrent: string[] = editor
       ?.getHTML()
       .split(/<(\/?\w+)>/)
       .filter(Boolean);
-    const infosContext: AnnotationType = {
-      id: uuid(),
-      title: arrayCurrent[1],
-      content: editor?.getHTML(),
-      createdBy: date.toUTCString(),
-      lastUpdate: date.toUTCString(),
-    };
 
-    const userAux = user.annotations.map((annotation: AnnotationType) => {
-      if (annotation.id === infosContext.id) {
-        return infosContext;
+    const userAux: AnnotationType[] = user.annotations.map((annotation: AnnotationType) => {
+      if (annotation.id === id) {
+        const auxAnnotation: AnnotationType = {
+          ...annotation,
+          title: arrayCurrent[1],
+          content: currentContent,
+          lastUpdate: new Date(),
+        };
+        return auxAnnotation;
       }
 
       return annotation;
     });
 
-    setUser(userAux);
+    const result = await updateAnnotation(userAux, user.id);
+    toastMessageLogin(result.data.status);
+
+    setUser(result.data.user);
+  }
+
+  function toastMessageLogin(message: string | AxiosError) {
+    const toastMessage: ToastMessageData = {
+      message: !(message instanceof AxiosError) ? message : message,
+      status: !(message instanceof AxiosError) ? "success" : "error",
+    };
+
+    toast[toastMessage.status](toastMessage.message, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   }
 }

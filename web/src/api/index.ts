@@ -1,6 +1,7 @@
 import axios from "axios";
 import { AuthenticationDTO, EventLog } from "../context";
 import { CreateFormRegisterData } from "../pages/Login/FormRegister";
+import { AnnotationType } from "../context/typesContext";
 
 const api = "http://localhost:9090";
 
@@ -16,6 +17,15 @@ export function getLogin(user: AuthenticationDTO) {
 export function createRegister(info: CreateFormRegisterData) {
   const aux = axios
     .post(`${api}/user`, info)
+    .then((response) => response)
+    .catch((error) => error);
+
+  return aux;
+}
+
+export function updateAnnotation(annotations: AnnotationType[], id: string) {
+  const aux = axios
+    .put(`${api}/user/${id}`, annotations)
     .then((response) => response)
     .catch((error) => error);
 

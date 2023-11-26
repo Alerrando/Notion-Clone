@@ -149,8 +149,9 @@ export function FormRegister({ setPages }: FormRegisterProps) {
         annotations: responseRegister.data.annotations,
         role: responseRegister.data.role,
       });
+
       setTimeout(() => {
-        navigate("/editor");
+        navigate(`/editor/${responseRegister.data.annotations[0].id}`);
       }, 5000);
     }
 
@@ -160,7 +161,9 @@ export function FormRegister({ setPages }: FormRegisterProps) {
 
 function toastMessage(aux: TokenUser | AxiosError) {
   const toastMessage: ToastMessageData = {
-    message: !(aux instanceof AxiosError) ? "Você foi cadastrado com sucesso" : aux.response?.data,
+    message: !(aux instanceof AxiosError)
+      ? "Você foi cadastrado com sucesso, Você será redirecionado!"
+      : aux.response?.data,
     status: !(aux instanceof AxiosError) ? "success" : "error",
   };
   toast[toastMessage.status](toastMessage.message, {

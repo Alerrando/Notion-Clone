@@ -4,7 +4,7 @@ import { GetState, SetState, StoreApiWithPersist, create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createEventLog } from "../api";
 import { routesRole } from "../routes";
-import { EventLog, RouterRole, UserDTOProps, UserProps } from "./typesContext";
+import { AnnotationType, EventLog, RouterRole, UserDTOProps, UserProps } from "./typesContext";
 
 export const UserValueDefault: UserProps = {
   id: "",
@@ -14,8 +14,9 @@ export const UserValueDefault: UserProps = {
   annotations: [
     {
       id: uuid(),
-      title: "<h1>Começando com o Notion</h1>",
+      title: "Começando com o Notion",
       content: `
+            <h1>Começando com o Notion</h1>
             <ul>
             <li><input type="checkbox"> Digite ****/**** para ver os tipos de conteúdo que você pode adicionar: títulos, vídeos, sub-páginas, etc.</li>
             </ul>
@@ -43,8 +44,27 @@ export const UserValueDefault: UserProps = {
       createdBy: new Date(),
       lastUpdate: new Date(),
     },
+    {
+      id: uuid(),
+      title: "Começando com o Notion 2",
+      content: `
+            <h1>Começando com o Notion 2</h1>
+            <p>Primeiro, o básico:</p>
+            <p>👉 Ficou com alguma dúvida? Clique no <code>?</code> ao final da página para ver mais tutoriais ou para entrar em contato</p>
+      `,
+      createdBy: new Date(),
+      lastUpdate: new Date(),
+    },
   ],
   role: "ADMIN",
+};
+
+const annotationCurrentValuesDefault: AnnotationType = {
+  id: "",
+  content: "",
+  createdBy: new Date(),
+  lastUpdate: new Date(),
+  title: "",
 };
 
 const UserDTOValuesDefault: UserDTOProps = {
@@ -56,6 +76,8 @@ const UserDTOValuesDefault: UserDTOProps = {
 export type ContextProps = {
   user: UserDTOProps;
   setUser: (user: UserDTOProps) => void;
+  annotationCurrent: AnnotationType;
+  setAnnotationCurrent: (annotationCurrent: AnnotationType) => void;
   EventLogRegister: (data: UserProps, eventTypeData: string, eventDetailsData: string) => void;
   verifyRoleUser: () => void;
 };
@@ -72,6 +94,11 @@ export const useNotionContext = create<
     (set: ContextProps) => ({
       user: UserDTOValuesDefault,
       setUser: (user: UserDTOProps) => set((state: ContextProps) => (state.user = user)),
+
+      annotationCurrent: annotationCurrentValuesDefault,
+      setAnnotationCurrent: (annotationCurrent: AnnotationType) =>
+        set((state: ContextProps) => (state.annotationCurrent = annotationCurrent)),
+
       EventLogRegister: async (data: UserProps, eventTypeData: string, eventDetailsData: string) => {
         await createEventLogRegister(data, eventTypeData, eventDetailsData);
       },

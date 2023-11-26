@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
-import { useEffect, useContext } from "react";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
@@ -33,15 +33,8 @@ export function FormLogin({ setPages }: FormLoginProps) {
     resolver: zodResolver(createFormSchema),
   });
   const useStore = useContext(StoreContext);
-  const { user, setUser } = useStore();
-
-  useEffect(() => {
-    if (user.id.length > 0) {
-      setTimeout(() => {
-        window.location.href = "/editor";
-      }, 5000);
-    }
-  }, [user]);
+  const { setUser, setAnnotationCurrent } = useStore();
+  const navigate = useNavigate();
 
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
@@ -147,14 +140,22 @@ export function FormLogin({ setPages }: FormLoginProps) {
       };
       setUser(aux);
 
+      setAnnotationCurrent(message.data.user.annotations[0]);
       localStorage.setItem("token-user", message.data.token);
+      const userAnnotationId = message.data.user.annotations[0].id;
+
+      setTimeout(() => {
+        navigate(`/editor/${userAnnotationId}`);
+      }, 5000);
     }
     toastMessageLogin(message);
   }
 
   function toastMessageLogin(message: TokenUser | AxiosError) {
     const toastMessage: ToastMessageData = {
-      message: !(message instanceof AxiosError) ? "Login feito com sucesso" : message.response?.data,
+      message: !(message instanceof AxiosError)
+        ? "Login feito com sucesso, Você será redirecionado!"
+        : message.response?.data,
       status: !(message instanceof AxiosError) ? "success" : "error",
     };
 

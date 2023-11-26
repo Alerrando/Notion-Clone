@@ -1,6 +1,7 @@
-import { useContext, useState } from "react";
+import { Key, useContext, useState } from "react";
 import { AiFillFolderOpen } from "react-icons/ai";
 import { BiTime } from "react-icons/bi";
+import { FaUserCircle } from "react-icons/fa";
 import { FiMenu } from "react-icons/fi";
 import { GoChevronRight, GoGear } from "react-icons/go";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -9,6 +10,7 @@ import { MdClose } from "react-icons/md";
 import { StoreContext } from "../context";
 import { AnnotationType } from "../context/typesContext";
 import { AsideMenu } from "./AsideMenu";
+import { useNavigate } from "react-router-dom";
 
 export type MenuListType = {
   name: string;
@@ -18,8 +20,9 @@ export type MenuListType = {
 
 export function Aside() {
   const useStore = useContext(StoreContext);
-  const { user } = useStore();
+  const { user, setAnnotationCurrent } = useStore();
   const [menu, setMenu] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const menuList: MenuListType = [
     {
@@ -54,7 +57,7 @@ export function Aside() {
           <div className="w-auto h-auto flex flex-col gap-12 py-6 overflow-x-hidden">
             <div className="w-[95%] h-auto flex flex-row gap-4 items-center justify-between px-4">
               <div className="rounded-full cursor-pointer min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem]">
-                <img src="user.svg" alt="avatar user" className="w-full h-full" />
+                <FaUserCircle className="w-full h-full" />
               </div>
 
               <div className="w-min gap-2 group hidden md:flex items-end ">
@@ -72,21 +75,30 @@ export function Aside() {
             <AsideMenu menuList={menuList} />
 
             <ul className="h-auto w-full flex flex-col gap-1 text-black dark:text-white px-2">
-              {user.annotations.map((contextUser: AnnotationType) => (
-                <>
-                  <li className="flex flex-row items-center bg-zinc-200 justify-start gap-1 py-0.5 px-1 rounded-md cursor-pointer">
+              {user.annotations !== undefined &&
+                user.annotations.map((contextUser: AnnotationType, index: Key) => (
+                  <li
+                    className="flex flex-row items-center hover:bg-zinc-200 justify-start gap-1 py-0.5 px-1 rounded-md cursor-pointer"
+                    key={index}
+                    onClick={() => changingAnnotationCurrent(contextUser)}
+                  >
                     <GoChevronRight size={16} />
                     <div className="flex flex-row items-center justify-start gap-1">
                       <IoDocumentTextOutline size={18} className="text-zinc-600" />
                       <span className="text-sm font-semibold">{contextUser?.title}</span>
                     </div>
                   </li>
-                </>
-              ))}
+                ))}
             </ul>
           </div>
         </div>
       </div>
     </>
   );
+
+  function changingAnnotationCurrent(contextUser: AnnotationType) {
+    setAnnotationCurrent(contextUser);
+
+    navigate(`/editor/${contextUser?.id}`);
+  }
 }
