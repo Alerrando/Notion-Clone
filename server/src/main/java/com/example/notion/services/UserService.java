@@ -1,9 +1,6 @@
 package com.example.notion.services;
 
-import com.example.notion.entities.Annotation;
-import com.example.notion.entities.AuthenticationDTO;
-import com.example.notion.entities.EventLog;
-import com.example.notion.entities.User;
+import com.example.notion.entities.*;
 import com.example.notion.repositorys.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,10 +98,11 @@ public class UserService implements UserDetailsService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
             }
             user.get().setAnnotations(annotations);
-
-            response.put("user", user.get());
+            UserDTO userDTO = new UserDTO(user.get().getId(), user.get().getAnnotations(), user.get().getRole());
+            response.put("user", userDTO);
             response.put("status", "Página atualizada com sucesso!");
 
+            userRepository.save((User) user.get());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         } catch (RuntimeException runtimeException){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);

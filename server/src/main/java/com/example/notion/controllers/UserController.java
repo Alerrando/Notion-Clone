@@ -38,8 +38,8 @@ public class UserController {
         return userService.create(user);
     }
 
-    @PutMapping
-    public ResponseEntity updateAnnotation(@RequestBody @Valid List<Annotation> annotations, @RequestBody @Valid String id){
+    @PutMapping("/{id}")
+    public ResponseEntity updateAnnotation(@RequestBody List<Annotation> annotations, @PathVariable String id){
         return userService.updateAnnotation(annotations, id);
     }
 }

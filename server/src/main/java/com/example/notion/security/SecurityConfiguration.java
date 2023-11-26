@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/find").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/user/{id}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class) //Adicionar um filtro antes de entrar na condição de rotas
