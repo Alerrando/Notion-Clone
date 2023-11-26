@@ -1,7 +1,7 @@
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
-import "react-toastify/dist/ReactToastify.css";
 
 export function App() {
   return (

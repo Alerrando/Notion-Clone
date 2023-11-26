@@ -1,5 +1,5 @@
 import { Key } from "react";
-import { MenuListType } from "./Aside";
+import { MenuListType } from ".";
 
 type AsideMenuProps = {
   menuList: MenuListType[];
