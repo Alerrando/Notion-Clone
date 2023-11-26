@@ -34,7 +34,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUser } = useGlobalStore();
+  const { setUser, setAnnotationCurrent } = useGlobalStore();
   const navigate = useNavigate();
 
   return (
@@ -145,13 +145,15 @@ export function FormRegister({ setPages }: FormRegisterProps) {
     const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
     if (!(responseRegister instanceof AxiosError)) {
       setUser({
-        id: responseRegister.data.id,
-        annotations: responseRegister.data.annotations,
-        role: responseRegister.data.role,
+        id: responseRegister.data.user.id,
+        annotations: responseRegister.data.user.annotations,
+        role: responseRegister.data.user.role,
+        token: responseRegister.data.token,
       });
 
+      setAnnotationCurrent(responseRegister.data.user.annotations[0]);
       setTimeout(() => {
-        navigate(`/editor/${responseRegister.data.annotations[0].id}`);
+        navigate(`/editor/${responseRegister.data.user.annotations[0].id}`);
       }, 5000);
     }
 

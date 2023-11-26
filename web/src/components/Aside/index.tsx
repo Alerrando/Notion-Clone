@@ -2,6 +2,7 @@ import { Key, useContext, useEffect, useState } from "react";
 import { AiFillFolderOpen } from "react-icons/ai";
 import { BiTime } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa";
+import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 import { FiMenu } from "react-icons/fi";
 import { GoChevronRight, GoGear } from "react-icons/go";
 import { IoDocumentTextOutline } from "react-icons/io5";
@@ -24,6 +25,7 @@ export function Aside() {
   const { user, setAnnotationCurrent } = useStore();
   const [menu, setMenu] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isFixed, setIsFixed] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const menuList: MenuListType = [
@@ -53,16 +55,23 @@ export function Aside() {
 
   return (
     <>
-      <div className="w-full h-full group">
-        <FiMenu className="w-12 h-12 text-black p-2 cursor-pointer md:group-hover:invisible hidden md:block" />
+      <div className="w-full h-full group container-aside relative">
+        <div className="h-min w-full items-center justify-start bg-zinc-100 dark:bg-[#2e2e2f] hidden md:flex">
+          <FiMenu className="w-10 h-10 text-black p-2 cursor-pointer group-hover:hidden" />
+
+          <FaAnglesRight
+            className="w-10 h-10 text-black p-2 cursor-pointer hidden group-hover:block"
+            onClick={() => setIsFixed(!isFixed)}
+          />
+        </div>
 
         <FiMenu
-          className="w-12 h-12 text-black p-2 cursor-pointer md:group-hover:invisible block md:hidden"
+          className="w-12 h-12 text-black p-2 cursor-pointer block md:hidden menu-svg-desktop"
           onClick={() => setMenu(!menu)}
         />
 
         <div
-          className={`hidden md:w-64 md:h-full md:flex flex-col justify-between dark:bg-zinc-800 border-e border-zinc-500 transition-all duration-500 md:absolute md:top-0 md:-left-full group-hover:left-0 aside-menu-${menu}`}
+          className={`hidden md:w-64 md:h-fit md:flex flex-col justify-between bg-zinc-100 dark:bg-[#2e2e2f] transition-all duration-500 md:absolute md:top-[8%] md:-left-full aside-menu ${menu} isfixed-${isFixed}`}
         >
           <div className="w-auto h-auto flex flex-col gap-12 py-6 overflow-x-hidden">
             {loading ? (
@@ -74,14 +83,14 @@ export function Aside() {
                     <FaUserCircle className="w-full h-full" />
                   </div>
 
-                  <div className="w-min gap-2 group hidden md:flex items-end ">
-                    <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-red-400"></button>
-                    <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-yellow-400"></button>
-                    <button className="w-3 h-3 rounded-full bg-zinc-300  group-hover:bg-green-400"></button>
+                  <div className="w-min gap-2 linux-box hidden md:flex items-end">
+                    <button className="w-3 h-3 rounded-full bg-zinc-300"></button>
+                    <button className="w-3 h-3 rounded-full bg-zinc-300"></button>
+                    <button className="w-3 h-3 rounded-full bg-zinc-300"></button>
                   </div>
 
                   <MdClose
-                    className="w-12 h-12 text-black p-2 cursor-pointer md:group-hover:invisible block md:hidden"
+                    className="w-12 h-12 text-black p-2 cursor-pointer block md:hidden close-menu-svg-desktop"
                     onClick={() => setMenu(!menu)}
                   />
                 </div>
@@ -104,6 +113,11 @@ export function Aside() {
                       </li>
                     ))}
                 </ul>
+
+                <FaAnglesLeft
+                  className="w-6 h-6 fixed left-4 bottom-[5%] cursor-pointer close-aside-menu"
+                  onClick={() => setIsFixed(!isFixed)}
+                />
               </>
             )}
           </div>

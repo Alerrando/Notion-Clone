@@ -71,6 +71,7 @@ const UserDTOValuesDefault: UserDTOProps = {
   id: "",
   role: "",
   annotations: [],
+  token: "",
 };
 
 export type ContextProps = {

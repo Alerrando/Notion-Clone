@@ -137,11 +137,11 @@ export function FormLogin({ setPages }: FormLoginProps) {
         id: message.data.user.id,
         annotations: message.data.user.annotations,
         role: message.data.user.role,
+        token: message.data.token,
       };
       setUser(aux);
 
       setAnnotationCurrent(message.data.user.annotations[0]);
-      localStorage.setItem("token-user", message.data.token);
       const userAnnotationId = message.data.user.annotations[0].id;
 
       setTimeout(() => {
