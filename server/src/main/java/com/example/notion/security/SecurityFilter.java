@@ -34,6 +34,9 @@ public class SecurityFilter extends OncePerRequestFilter  {
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+        else{
+            response.getWriter().write("Token não fornecido");
+        }
 
         filterChain.doFilter(request, response);
     }

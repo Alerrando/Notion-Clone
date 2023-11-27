@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                 .cors(httpSecurityCorsConfigurer -> {})
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/user").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/user").authenticated()
                         .requestMatchers(HttpMethod.POST, "/user/find").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/user/{id}").permitAll()
