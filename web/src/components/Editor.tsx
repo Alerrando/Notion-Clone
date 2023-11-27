@@ -25,10 +25,10 @@ export interface EditorProps {}
 
 export function Editor() {
   const useStore = useContext(StoreContext);
-  const { user, setUser } = useStore();
+  const { user, setUser, annotationCurrent, setAnnotationCurrent } = useStore();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
-    user.annotations.find((annotation: AnnotationType) => annotation.id === id).content,
+    annotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content,
   );
   const [editableTask, setEditableTask] = useState<boolean>(false);
   const toggleGroupItemClasses =
@@ -57,14 +57,14 @@ export function Editor() {
   });
 
   useEffect(() => {
-    const newContent = user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content;
+    const newContent = annotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content;
     setCurrentEditor(newContent);
     setEditableTask(false);
     if (editor && newContent) {
       editor.chain().setContent(newContent).run();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, user.annotations]);
+  }, [id, annotationCurrent]);
 
   return (
     <>
@@ -224,6 +224,31 @@ export function Editor() {
     </>
   );
 
+  function handleChangeEdit() {
+    const currentContent = editor?.getHTML();
+    const arrayCurrent: string[] = editor
+      ?.getHTML()
+      .split(/<(\/?\w+)>/)
+      .filter(Boolean);
+
+    const auxAnnotationCurrent = annotationCurrent.map((annotation: AnnotationType) => {
+      if (annotation.id === id) {
+        const auxAnnotation: AnnotationType = {
+          id: annotation.id,
+          title: arrayCurrent[1],
+          content: currentContent,
+          lastUpdate: new Date(),
+          createdBy: annotation.createdBy,
+        };
+
+        return auxAnnotation;
+      }
+      return annotation;
+    });
+
+    setAnnotationCurrent(auxAnnotationCurrent);
+  }
+
   async function handleSaveEditTask() {
     const currentContent = editor?.getHTML();
 
@@ -232,7 +257,7 @@ export function Editor() {
       .split(/<(\/?\w+)>/)
       .filter(Boolean);
 
-    const userAux: AnnotationType[] = user.annotations.map((annotation: AnnotationType) => {
+    const annotationCurrentAux: AnnotationType[] = annotationCurrent.map((annotation: AnnotationType) => {
       if (annotation.id === id) {
         const auxAnnotation: AnnotationType = {
           ...annotation,
@@ -246,7 +271,7 @@ export function Editor() {
       return annotation;
     });
 
-    const result = await updateAnnotation(userAux, user.id);
+    const result = await updateAnnotation(annotationCurrentAux, user.id);
     toastMessageLogin(result.data.status);
 
     setUser(result.data.user);

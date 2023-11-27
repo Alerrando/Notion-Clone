@@ -141,7 +141,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
       };
       setUser(aux);
 
-      setAnnotationCurrent(message.data.user.annotations[0]);
+      setAnnotationCurrent(message.data.user.annotations);
       const userAnnotationId = message.data.user.annotations[0].id;
 
       setTimeout(() => {

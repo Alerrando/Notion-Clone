@@ -151,7 +151,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
         token: responseRegister.data.token,
       });
 
-      setAnnotationCurrent(responseRegister.data.user.annotations[0]);
+      setAnnotationCurrent(responseRegister.data.user.annotations);
       setTimeout(() => {
         navigate(`/editor/${responseRegister.data.user.annotations[0].id}`);
       }, 5000);

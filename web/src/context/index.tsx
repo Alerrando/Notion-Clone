@@ -59,13 +59,15 @@ export const UserValueDefault: UserProps = {
   role: "ADMIN",
 };
 
-const annotationCurrentValuesDefault: AnnotationType = {
-  id: "",
-  content: "",
-  createdBy: new Date(),
-  lastUpdate: new Date(),
-  title: "",
-};
+const annotationCurrentValuesDefault: AnnotationType = [
+  {
+    id: "",
+    content: "",
+    createdBy: new Date(),
+    lastUpdate: new Date(),
+    title: "",
+  },
+];
 
 const UserDTOValuesDefault: UserDTOProps = {
   id: "",
@@ -97,7 +99,7 @@ export const useNotionContext = create<
       setUser: (user: UserDTOProps) => set((state: ContextProps) => (state.user = user)),
 
       annotationCurrent: annotationCurrentValuesDefault,
-      setAnnotationCurrent: (annotationCurrent: AnnotationType) =>
+      setAnnotationCurrent: (annotationCurrent: AnnotationType[]) =>
         set((state: ContextProps) => (state.annotationCurrent = annotationCurrent)),
 
       EventLogRegister: async (data: UserProps, eventTypeData: string, eventDetailsData: string) => {
