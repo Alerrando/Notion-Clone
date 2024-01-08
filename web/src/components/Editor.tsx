@@ -8,14 +8,15 @@ import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
 import { lowlight } from "lowlight";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { LuSettings2 } from "react-icons/lu";
 import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrikethrough } from "react-icons/rx";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { twMerge } from "tailwind-merge";
 import { updateAnnotation } from "../api";
-import { StoreContext } from "../context";
-import { AnnotationType, ToastMessageData } from "../context/typesContext";
+import { useAuth } from "../context";
+import { AnnotationType, ToastMessageData } from "../context/types";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
@@ -24,13 +25,11 @@ lowlight.registerLanguage("js", js);
 export interface EditorProps {}
 
 export function Editor() {
-  const useStore = useContext(StoreContext);
-  const { user, setUser, annotationCurrent, setAnnotationCurrent } = useStore();
+  const { user, setUser } = useAuth();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
-    annotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content,
+    user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content,
   );
-  const [editableTask, setEditableTask] = useState<boolean>(false);
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
   const editor = useEditor({
@@ -40,48 +39,46 @@ export function Editor() {
         lowlight,
       }),
     ],
-    onUpdate(editor) {
-      const currentEditorUpdate = editor.editor.getHTML();
-      if (currentEditorUpdate !== currentEditor) {
-        setEditableTask(true);
-      } else {
-        setEditableTask(false);
-      }
-    },
     content: currentEditor,
     editorProps: {
       attributes: {
-        class: "h-full outline-none",
+        class: "h-full outline-none z-10",
       },
     },
   });
 
   useEffect(() => {
-    const newContent = annotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content;
+    const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
     setCurrentEditor(newContent);
-    setEditableTask(false);
     if (editor && newContent) {
       editor.chain().setContent(newContent).run();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, annotationCurrent]);
+  }, [id]);
+
+  console.log(user);
 
   return (
     <>
       <EditorContent
         editor={editor}
-        className="w-2/3 md:w-auto md:max-w-[65%] h-auto flex flex-col mx-auto md:mr-[25%] pt-8 md:pt-16 prose prose-invert text-black dark:text-white"
-      >
-        {editableTask && (
-          <div className="w-full h-auto flex items-center justify-end">
-            <button
-              className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 dark:text-white hover:text-white"
-              onClick={() => handleSaveEditTask()}
-            >
-              Salvar
-            </button>
-          </div>
+        className={twMerge(
+          "w-2/3 md:w-auto md:max-w-[65%] h-auto flex flex-col-reverse mx-auto md:mr-[25%] pt-8 md:pt-12 prose prose-invert text-black dark:text-white relative",
+          `${
+            editor?.getText().length === 0
+              ? "after:w-auto after:h-min after:content-['Sem_Titulo'] after:block after:text-zinc-600 after:text-4xl after:absolute after:bottom-[40%] after:z-0"
+              : ""
+          }`,
         )}
+      >
+        <div className="w-full h-auto flex items-center justify-end">
+          <button
+            className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 dark:text-white hover:text-white"
+            onClick={() => handleSaveEditTask()}
+          >
+            Salvar
+          </button>
+        </div>
       </EditorContent>
       {editor && (
         <FloatingMenu
@@ -106,7 +103,7 @@ export function Editor() {
 
             <Popover.Portal>
               <Popover.Content className="bg-zinc-700 md:bg-zinc-200 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-50">
-                <div className="">
+                <div className="group" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()}>
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
                       src="https://www.notion.so/images/blocks/text/en-US.png"
@@ -130,7 +127,13 @@ export function Editor() {
                   </FloatingMenuShow.Root>
                 </div>
 
-                <div className="" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+                <div
+                  className=""
+                  onClick={() => {
+                    console.log(findDiff(currentEditor, editor.getHTML()));
+                    editor.chain().focus().toggleHeading({ level: 1 }).run();
+                  }}
+                >
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
                       src="https://www.notion.so/images/blocks/header.57a7576a.png"
@@ -224,14 +227,26 @@ export function Editor() {
     </>
   );
 
-  function handleChangeEdit() {
+  function findDiff(str1: string, str2: string) {
+    let diff = "";
+    str2.split("").forEach((val, i) => {
+      if (val !== str1.charAt(i)) {
+        diff += val;
+      }
+    });
+
+    return diff;
+  }
+
+  async function handleSaveEditTask() {
     const currentContent = editor?.getHTML();
+
     const arrayCurrent: string[] = editor
       ?.getHTML()
       .split(/<(\/?\w+)>/)
       .filter(Boolean);
 
-    const auxAnnotationCurrent = annotationCurrent.map((annotation: AnnotationType) => {
+    const auxAnnotationCurrent: AnnotationType[] = user.annotations.map((annotation: AnnotationType) => {
       if (annotation.id === id) {
         const auxAnnotation: AnnotationType = {
           id: annotation.id,
@@ -245,33 +260,7 @@ export function Editor() {
       }
       return annotation;
     });
-
-    setAnnotationCurrent(auxAnnotationCurrent);
-  }
-
-  async function handleSaveEditTask() {
-    const currentContent = editor?.getHTML();
-
-    const arrayCurrent: string[] = editor
-      ?.getHTML()
-      .split(/<(\/?\w+)>/)
-      .filter(Boolean);
-
-    const annotationCurrentAux: AnnotationType[] = annotationCurrent.map((annotation: AnnotationType) => {
-      if (annotation.id === id) {
-        const auxAnnotation: AnnotationType = {
-          ...annotation,
-          title: arrayCurrent[1],
-          content: currentContent,
-          lastUpdate: new Date(),
-        };
-        return auxAnnotation;
-      }
-
-      return annotation;
-    });
-
-    const result = await updateAnnotation(annotationCurrentAux, user.id);
+    const result = await updateAnnotation(auxAnnotationCurrent, user.id);
     toastMessageLogin(result.data.status);
 
     setUser(result.data.user);

@@ -1,9 +1,20 @@
 import axios from "axios";
 import { AuthenticationDTO, EventLog } from "../context";
+import { AnnotationType } from "../context/types";
 import { CreateFormRegisterData } from "../pages/Login/FormRegister";
-import { AnnotationType } from "../context/typesContext";
 
 const api = "http://localhost:9090";
+
+export function getAllUsers() {
+  const aux = axios
+    .get(`${api}/user`, {
+      withCredentials: true,
+    })
+    .then((response) => response)
+    .catch((error) => error);
+
+  return aux;
+}
 
 export function getLogin(user: AuthenticationDTO) {
   const aux = axios

@@ -2,17 +2,33 @@ import { BiCommentDetail } from "react-icons/bi";
 import { CgScreen } from "react-icons/cg";
 import { CiMenuKebab } from "react-icons/ci";
 import { IoIosStarOutline } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 import { SlSizeFullscreen } from "react-icons/sl";
 import { TbClockHour9 } from "react-icons/tb";
+import uuid from "react-uuid";
+import { useAuth } from "../context";
 
-export function ModalAddContent() {
+type ModalAddContentProps = {
+  setAddPageModal: (addPageModal: boolean) => void;
+};
+
+export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
+  const { user, setUser } = useAuth();
+
   return (
     <div className="w-screen h-screen flex items-center justify-center inset-0 fixed bg-modal z-[60]">
       <div className="w-[55%] h-[calc(100%_-_144px)] bg-white rounded-lg">
         <header className="w-full h-auto py-3 px-4 flex items-center justify-between">
           <div className="">
             <div className="flex flex-row gap-1 items-center text-black">
-              <SlSizeFullscreen className="w-8 h-8 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
+              <IoClose
+                className="w-10 h-10 p-2 cursor-pointer hover:bg-zinc-200 rounded-md"
+                onClick={() => setAddPageModal(false)}
+              />
+              <SlSizeFullscreen
+                className="w-8 h-8 p-2 cursor-pointer hover:bg-zinc-200 rounded-md"
+                onClick={() => addNewAnnotation()}
+              />
               <CgScreen className="w-9 h-9 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
             </div>
           </div>
@@ -34,4 +50,19 @@ export function ModalAddContent() {
       </div>
     </div>
   );
+
+  function addNewAnnotation() {
+    const newAnnotation = {
+      id: uuid(),
+      title: "Sem título",
+      content: ``,
+      createdBy: new Date(),
+      lastUpdate: new Date(),
+    };
+
+    const userAux = user;
+    userAux.annotations.push(newAnnotation);
+
+    setUser(userAux);
+  }
 }

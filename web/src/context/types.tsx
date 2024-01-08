@@ -25,7 +25,6 @@ export type UserProps = {
   password: string;
   annotations: AnnotationType[];
   role: RoleProps;
-  token: string;
 };
 
 export type AuthenticationDTO = {
@@ -36,7 +35,6 @@ export type AuthenticationDTO = {
 export type UserDTOProps = Omit<UserProps, "name" | "email" | "password">;
 
 export type TokenUser = {
-  token: string;
   user: UserProps;
 };
 

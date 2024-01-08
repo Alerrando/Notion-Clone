@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { MdPassword } from "react-icons/md";
@@ -10,8 +10,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { getLogin } from "../../../api";
-import { StoreContext } from "../../../context";
-import { ToastMessageData, TokenUser, UserDTOProps } from "../../../context/typesContext";
+import { useAuth } from "../../../context";
+import { ToastMessageData, TokenUser, UserDTOProps } from "../../../context/types";
 
 const createFormSchema = z.object({
   email: z.string().email().nonempty("Digite seu email"),
@@ -32,9 +32,35 @@ export function FormLogin({ setPages }: FormLoginProps) {
   } = useForm<CreateFormLoginData>({
     resolver: zodResolver(createFormSchema),
   });
-  const useStore = useContext(StoreContext);
-  const { setUser, setAnnotationCurrent } = useStore();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
+  const mutation = useMutation({
+    mutationFn: async (data) => await getLogin(data),
+    onSuccess: (data) => {
+      if (!(data instanceof AxiosError)) {
+        const response = data as TokenUser;
+
+        const aux: UserDTOProps = {
+          id: response.data.id,
+          annotations: response.data.annotations,
+          role: response.data.role,
+        };
+        setUser(aux);
+
+        localStorage.setItem("user-notion", aux.id);
+        const userAnnotationId = response.data.annotations[0].id;
+
+        setTimeout(() => {
+          navigate(`/editor/${userAnnotationId}`);
+        }, 5000);
+      }
+
+      toastMessageLogin(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
   return (
     <div className="h-max md:h-screen w-full flex items-center justify-center">
@@ -129,33 +155,15 @@ export function FormLogin({ setPages }: FormLoginProps) {
     </div>
   );
 
-  async function submit(data: CreateFormLoginData) {
-    const message: TokenUser | AxiosError = await getLogin(data);
-
-    if (!(message instanceof AxiosError)) {
-      const aux: UserDTOProps = {
-        id: message.data.user.id,
-        annotations: message.data.user.annotations,
-        role: message.data.user.role,
-        token: message.data.token,
-      };
-      setUser(aux);
-
-      setAnnotationCurrent(message.data.user.annotations);
-      const userAnnotationId = message.data.user.annotations[0].id;
-
-      setTimeout(() => {
-        navigate(`/editor/${userAnnotationId}`);
-      }, 5000);
-    }
-    toastMessageLogin(message);
+  async function submit(dataLogin: CreateFormLoginData) {
+    mutation.mutate(dataLogin);
   }
 
   function toastMessageLogin(message: TokenUser | AxiosError) {
     const toastMessage: ToastMessageData = {
       message: !(message instanceof AxiosError)
         ? "Login feito com sucesso, Você será redirecionado!"
-        : message.response?.data,
+        : message.response?.data.message,
       status: !(message instanceof AxiosError) ? "success" : "error",
     };
 

@@ -19,8 +19,10 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["react", "jsx-a11y", "@typescript-eslint"],
+  "plugins": ["react", "jsx-a11y", "@typescript-eslint", "react-hooks"],
   "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "prettier/prettier": [
       "error",
       {

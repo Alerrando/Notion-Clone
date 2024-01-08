@@ -1,4 +1,4 @@
-import { Key, useContext, useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { AiFillFolderOpen } from "react-icons/ai";
 import { BiTime } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa";
@@ -10,15 +10,15 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { IconType } from "react-icons/lib";
 import { MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { StoreContext } from "../../context";
-import { AnnotationType } from "../../context/typesContext";
+import { useAuth } from "../../context";
+import { AnnotationType } from "../../context/types";
 import { AsideMenu } from "./AsideMenu";
 import { SkeletonAside } from "./SkeletonAside";
 
 export type MenuListType = {
   name: string;
   icon: IconType;
-  openMenuList?: any;
+  openMenuList?: () => void;
 };
 
 type AsideProps = {
@@ -26,8 +26,7 @@ type AsideProps = {
 };
 
 export function Aside({ handleChangeValuePageModal }: AsideProps) {
-  const useStore = useContext(StoreContext);
-  const { annotationCurrent } = useStore();
+  const { user } = useAuth();
   const [menu, setMenu] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFixed, setIsFixed] = useState<boolean>(false);
@@ -109,8 +108,8 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
                 <AsideMenu menuList={menuList} />
 
                 <ul className="h-auto w-full flex flex-col gap-1 text-black dark:text-white px-2">
-                  {annotationCurrent !== undefined &&
-                    annotationCurrent.map((contextUser: AnnotationType, index: Key) => (
+                  {user?.annotations !== undefined &&
+                    user?.annotations?.map((contextUser: AnnotationType, index: Key) => (
                       <li
                         className="flex flex-row items-center hover:bg-zinc-200 dark:hover:bg-zinc-600 justify-start gap-1 py-0.5 px-1 rounded-md cursor-pointer"
                         key={index}

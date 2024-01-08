@@ -10,9 +10,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { createRegister } from "../../../api";
-import { UserValueDefault } from "../../../context";
-import { ToastMessageData, TokenUser, UserProps } from "../../../context/typesContext";
-import { useGlobalStore } from "../../../context/useGlobalStore";
+import { UserValueDefault, useAuth } from "../../../context";
+import { ToastMessageData, TokenUser, UserDTOProps, UserProps } from "../../../context/types";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -34,7 +33,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUser, setAnnotationCurrent } = useGlobalStore();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -144,16 +143,17 @@ export function FormRegister({ setPages }: FormRegisterProps) {
 
     const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
     if (!(responseRegister instanceof AxiosError)) {
-      setUser({
+      const aux: UserDTOProps = {
         id: responseRegister.data.user.id,
         annotations: responseRegister.data.user.annotations,
         role: responseRegister.data.user.role,
-        token: responseRegister.data.token,
-      });
+      };
 
-      setAnnotationCurrent(responseRegister.data.user.annotations);
+      setUser(aux);
+      localStorage.setItem("user-notion", aux.id);
+
       setTimeout(() => {
-        navigate(`/editor/${responseRegister.data.user.annotations[0].id}`);
+        navigate(`/editor/${aux.annotations[0].id}`);
       }, 5000);
     }
 
@@ -161,12 +161,12 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   }
 }
 
-function toastMessage(aux: TokenUser | AxiosError) {
+function toastMessage(message: TokenUser | AxiosError) {
   const toastMessage: ToastMessageData = {
-    message: !(aux instanceof AxiosError)
+    message: !(message instanceof AxiosError)
       ? "Você foi cadastrado com sucesso, Você será redirecionado!"
-      : aux.response?.data,
-    status: !(aux instanceof AxiosError) ? "success" : "error",
+      : message.response?.data.message,
+    status: !(message instanceof AxiosError) ? "success" : "error",
   };
   toast[toastMessage.status](toastMessage.message, {
     position: "bottom-left",

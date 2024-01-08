@@ -1,10 +1,12 @@
-import { createContext } from "react";
+import React, { createContext, useContext, useState } from "react";
 import uuid from "react-uuid";
-import { GetState, SetState, StoreApiWithPersist, create } from "zustand";
-import { persist } from "zustand/middleware";
 import { createEventLog } from "../api";
 import { routesRole } from "../routes";
-import { AnnotationType, EventLog, RouterRole, UserDTOProps, UserProps } from "./typesContext";
+import { EventLog, RouterRole, UserDTOProps, UserProps } from "./typesContext";
+
+type IPropsContext = {
+  children: React.ReactNode;
+};
 
 export const UserValueDefault: UserProps = {
   id: "",
@@ -59,85 +61,60 @@ export const UserValueDefault: UserProps = {
   role: "ADMIN",
 };
 
-const annotationCurrentValuesDefault: AnnotationType = [
-  {
-    id: "",
-    content: "",
-    createdBy: new Date(),
-    lastUpdate: new Date(),
-    title: "",
-  },
-];
-
-const UserDTOValuesDefault: UserDTOProps = {
+const userDTOValuesDefault: UserDTOProps = {
   id: "",
   role: "",
   annotations: [],
-  token: "",
 };
 
 export type ContextProps = {
   user: UserDTOProps;
   setUser: (user: UserDTOProps) => void;
-  annotationCurrent: AnnotationType;
-  setAnnotationCurrent: (annotationCurrent: AnnotationType) => void;
   EventLogRegister: (data: UserProps, eventTypeData: string, eventDetailsData: string) => void;
   verifyRoleUser: () => void;
 };
 
-const StoreContext = createContext<StoreApiWithPersist<ContextProps>>({} as StoreApiWithPersist<ContextProps>);
+export const StoreContext = createContext<ContextProps>({} as ContextProps);
 
-export const useNotionContext = create<
-  ContextProps,
-  SetState<ContextProps>,
-  GetState<ContextProps>,
-  StoreApiWithPersist<ContextProps>
->(
-  persist<ContextProps>(
-    (set: ContextProps) => ({
-      user: UserDTOValuesDefault,
-      setUser: (user: UserDTOProps) => set((state: ContextProps) => (state.user = user)),
+export function UseNotionContext({ children }: IPropsContext) {
+  const [user, setUser] = useState<UserDTOProps>(userDTOValuesDefault);
 
-      annotationCurrent: annotationCurrentValuesDefault,
-      setAnnotationCurrent: (annotationCurrent: AnnotationType[]) =>
-        set((state: ContextProps) => (state.annotationCurrent = annotationCurrent)),
+  async function eventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
+    await createEventLogRegister(data, eventTypeData, eventDetailsData);
+  }
 
-      EventLogRegister: async (data: UserProps, eventTypeData: string, eventDetailsData: string) => {
-        await createEventLogRegister(data, eventTypeData, eventDetailsData);
-      },
-      verifyRoleUser: () =>
-        set((state: ContextProps) => {
-          const pathName = window.location.pathname;
-          if (pathName !== "/") {
-            routesRole.forEach((route: RouterRole) => {
-              if (pathName === route.path && route.role !== state.user.role) {
-                window.location.href = "/";
-              }
-            });
-          }
-        }),
-    }),
-    {
-      name: "user-notion",
-      getStorage: () => localStorage,
-    },
-  ),
-);
+  function verifyRoleUser() {
+    const pathName = window.location.pathname;
+    if (pathName !== "/") {
+      routesRole.forEach((route: RouterRole) => {
+        if (pathName === route.path && route.role !== user.role) {
+          window.location.href = "/";
+        }
+      });
+    }
+  }
 
-async function createEventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
-  const dataLog: EventLog = {
-    id: "0",
-    user: data,
-    timestamp: Date.now(),
-    eventType: eventTypeData,
-    eventDetails: eventDetailsData,
-  };
+  async function createEventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
+    const dataLog: EventLog = {
+      id: "0",
+      user: data,
+      timestamp: Date.now(),
+      eventType: eventTypeData,
+      eventDetails: eventDetailsData,
+    };
 
-  await createEventLog(dataLog);
+    await createEventLog(dataLog);
+  }
+
+  return (
+    <StoreContext.Provider value={{ user, setUser, eventLogRegister, verifyRoleUser }}>
+      {children}
+    </StoreContext.Provider>
+  );
 }
 
-function StoreProvider({ children }) {
-  return <StoreContext.Provider value={useNotionContext}>{children}</StoreContext.Provider>;
-}
+export function useAuth() {
+  const context = useContext(StoreContext);
 
-export { StoreContext, StoreProvider };
+  return context;
+}
