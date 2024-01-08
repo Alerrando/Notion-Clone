@@ -2,7 +2,6 @@ package com.example.notion.entities;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity

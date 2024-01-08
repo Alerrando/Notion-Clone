@@ -4,7 +4,6 @@ import com.example.notion.entities.*;
 import com.example.notion.repositorys.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,9 +27,6 @@ public class UserService implements UserDetailsService {
     private TokenService tokenService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private EventLogService eventLogService;
 
 
@@ -40,46 +36,38 @@ public class UserService implements UserDetailsService {
 
     public ResponseEntity findUser(AuthenticationDTO authenticationDTO) {
         try {
-            Map<String, Object> response = new HashMap<>();
-            User user = (User) userRepository.findUser(authenticationDTO.email());
-            if(user.getEmail().equals(authenticationDTO.email())){
-                var userEmailPassword = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.password());
-                var auth = this.authenticationManager.authenticate(userEmailPassword);
-                var token = tokenService.generateToken((User) auth.getPrincipal());
-
-                response.put("token", token);
-                response.put("user", user);
+            User user = (User) userRepository.findUser(authenticationDTO.getEmail());
+            if(user.getEmail().equals(authenticationDTO.getEmail())){
+                tokenService.generateToken(authenticationDTO);
 
                 EventLog eventLog = new EventLog(0, user, new Date(),"Login", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
                 eventLogService.create(eventLog);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(user);
             }
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
-
     }
 
     public ResponseEntity create(@Valid User user){
         try {
             User optional = (User) userRepository.findUser(user.getEmail());
-            Map<String, Object> response = new HashMap<>();
             if(optional == null || optional.equals(user)){
                 String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
                 user.setPassword(encryptedPassword);
                 user.setId(UUID.randomUUID().toString());
-                var token = tokenService.generateToken(user);
 
-                response.put("token", token);
-                response.put("user", user);
+                AuthenticationDTO authenticationDTO = new AuthenticationDTO(user.getEmail(), user.getPassword());
+                tokenService.generateToken(authenticationDTO);
+
                 userRepository.save(user);
 
                 EventLog eventLog = new EventLog(0, user, new Date(),"Registro", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
                 eventLogService.create(eventLog);
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                return ResponseEntity.status(HttpStatus.CREATED).body(user);
             }
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário Já Cadastrado");
