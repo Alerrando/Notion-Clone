@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.notion.entities.AuthenticationDTO;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +23,6 @@ public class TokenService {
     @Autowired
     private HttpServletResponse response;
 
-    @Autowired
-    private Algorithm algorithm;
 
     @Value("${jwt.cookieExpiry}")
     private int cookieExpiry;
@@ -32,27 +31,26 @@ public class TokenService {
     private String secret;
     public void generateToken(AuthenticationDTO user) {
         try {
-
             if (user != null) {
+                Algorithm algorithm = Algorithm.HMAC256(secret);
                 String token = JWT.create()
-                        .withIssuer("auth-api")
-                        .withSubject(user.getEmail())
-                        .withExpiresAt(Instant.now().plusMillis(600000))
+                        .withIssuer("auth-api") //Emissor do token
+                        .withSubject(user.getEmail()) //Usuário que está recebendo o token
+                        .withExpiresAt(getExpirationDate()) //Tempo de expiração
                         .sign(algorithm);
 
-                ResponseCookie cookie = ResponseCookie.from("accessToken", token)
-                        .httpOnly(true)
-                        .secure(false)
-                        .path("/")
-                        .maxAge(cookieExpiry)
-                        .build();
-                response.addHeader("Set-Cookie", cookie.toString());
+                Cookie cookie = new Cookie("accessToken", token);
+                cookie.setHttpOnly(true);
+                cookie.setSecure(false); // Altere para true se estiver usando HTTPS
+                cookie.setPath("/");
+                cookie.setMaxAge(cookieExpiry);
+
+                response.addCookie(cookie);
             }
         } catch (JWTVerificationException exception) {
             throw new RuntimeException("Error while generating token", exception);
         }
     }
-
 
     public String validateToken(String token){
         try {

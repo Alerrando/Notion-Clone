@@ -39,16 +39,12 @@ public class SecurityFilter extends OncePerRequestFilter  {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("Idea-7f7ef04e")) { // Aqui estava "Idea-7f7ef04e"
+                if (cookie.getName().equals("accessToken")) { // Aqui estava "Idea-7f7ef04e"
                     String token = cookie.getValue();
-                    String username = extractUsername(token);
-
-                    if (username != null && tokenService.validateToken(token).length() > 0) {
-                        UserDetails user = userRepository.findUser(username);
-                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    }
+                    var subject = tokenService.validateToken(token);
+                    UserDetails user = userRepository.findUser(subject);
+                    var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
         }
