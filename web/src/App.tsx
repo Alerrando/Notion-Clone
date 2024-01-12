@@ -1,19 +1,37 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 import { ModalAddContent } from "./components/ModalAddContent";
 import { useAuth } from "./context";
+import { UserProps } from "./context/types";
 
 export function App() {
-  const { verifyRoleUser } = useAuth();
+  const { setUsersAll, setUser, user, verifyRoleUser } = useAuth();
   const [addPageModal, setAddPageModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (user?.id?.length === 0) {
+      const getUsersAll: UserProps[] = JSON.parse(localStorage.getItem("users-all-notion"));
+      const idUser: string | undefined = localStorage.getItem("user-notion");
+      console.log(idUser);
+      const getUser = getUsersAll.find((user: UserProps) => user.id === idUser);
+      if (getUsersAll || getUser) {
+        setUsersAll(getUsersAll);
+        setUser(getUser);
+
+        console.log(getUser, getUsersAll);
+        setTimeout(() => {
+          navigate(`/editor/${getUser.annotations.id}`);
+        }, 5000);
+      }
+    }
+
     verifyRoleUser && verifyRoleUser();
   }, []);
-
   return (
     <>
       <div className="min-h-screen flex items-center justify-center text-zinc-50 bg-white dark:bg-[#2e2e2f] overflow-y-auto">

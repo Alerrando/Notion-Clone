@@ -8,6 +8,9 @@ const api = "http://localhost:9090";
 export function getAllUsers() {
   const aux = axios
     .get(`${api}/user`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
       withCredentials: true,
     })
     .then((response) => response)
@@ -18,7 +21,9 @@ export function getAllUsers() {
 
 export function getLogin(user: AuthenticationDTO) {
   const aux = axios
-    .post(`${api}/user/find`, user)
+    .post(`${api}/user/find`, user, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 
@@ -27,7 +32,9 @@ export function getLogin(user: AuthenticationDTO) {
 
 export function createRegister(info: CreateFormRegisterData) {
   const aux = axios
-    .post(`${api}/user`, info)
+    .post(`${api}/user`, info, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 
@@ -36,7 +43,9 @@ export function createRegister(info: CreateFormRegisterData) {
 
 export function updateAnnotation(annotations: AnnotationType[], id: string) {
   const aux = axios
-    .put(`${api}/user/${id}`, annotations)
+    .put(`${api}/user/${id}`, annotations, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 
@@ -46,7 +55,9 @@ export function updateAnnotation(annotations: AnnotationType[], id: string) {
 // ------------------------- API EventLog -------------------------
 export function getFindAllEventLog() {
   const aux = axios
-    .get(`${api}/event-log`)
+    .get(`${api}/event-log`, {
+      withCredentials: true,
+    })
     .then((response) => response.data)
     .catch((error) => error);
 
@@ -55,7 +66,9 @@ export function getFindAllEventLog() {
 
 export function getEventLogById(id: number) {
   const aux = axios
-    .get(`${api}/event-log/${id}`)
+    .get(`${api}/event-log/${id}`, {
+      withCredentials: true,
+    })
     .then((response) => response.data)
     .catch((error) => error);
 
@@ -64,7 +77,9 @@ export function getEventLogById(id: number) {
 
 export function createEventLog(dataLog: EventLog) {
   const aux = axios
-    .post(`${api}/event-log`, dataLog)
+    .post(`${api}/event-log`, dataLog, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 

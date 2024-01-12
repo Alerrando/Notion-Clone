@@ -3,7 +3,6 @@ import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { BubbleMenu, EditorContent, FloatingMenu, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { AxiosError } from "axios";
 import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
@@ -14,9 +13,8 @@ import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrike
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { twMerge } from "tailwind-merge";
-import { updateAnnotation } from "../api";
 import { useAuth } from "../context";
-import { AnnotationType, ToastMessageData } from "../context/types";
+import { AnnotationType, ToastMessageData, UserProps } from "../context/types";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
@@ -25,7 +23,7 @@ lowlight.registerLanguage("js", js);
 export interface EditorProps {}
 
 export function Editor() {
-  const { user, setUser } = useAuth();
+  const { usersAll, setUsersAll, user, setUser } = useAuth();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
     user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content,
@@ -47,6 +45,8 @@ export function Editor() {
     },
   });
 
+  console.log(usersAll);
+
   useEffect(() => {
     const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
     setCurrentEditor(newContent);
@@ -55,8 +55,6 @@ export function Editor() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  console.log(user);
 
   return (
     <>
@@ -130,7 +128,6 @@ export function Editor() {
                 <div
                   className=""
                   onClick={() => {
-                    console.log(findDiff(currentEditor, editor.getHTML()));
                     editor.chain().focus().toggleHeading({ level: 1 }).run();
                   }}
                 >
@@ -227,27 +224,16 @@ export function Editor() {
     </>
   );
 
-  function findDiff(str1: string, str2: string) {
-    let diff = "";
-    str2.split("").forEach((val, i) => {
-      if (val !== str1.charAt(i)) {
-        diff += val;
-      }
-    });
-
-    return diff;
-  }
-
   async function handleSaveEditTask() {
     const currentContent = editor?.getHTML();
 
-    const arrayCurrent: string[] = editor
+    const arrayCurrent: string[] | undefined = editor
       ?.getHTML()
       .split(/<(\/?\w+)>/)
       .filter(Boolean);
 
     const auxAnnotationCurrent: AnnotationType[] = user.annotations.map((annotation: AnnotationType) => {
-      if (annotation.id === id) {
+      if (annotation.id === id && arrayCurrent && currentContent) {
         const auxAnnotation: AnnotationType = {
           id: annotation.id,
           title: arrayCurrent[1],
@@ -260,16 +246,34 @@ export function Editor() {
       }
       return annotation;
     });
-    const result = await updateAnnotation(auxAnnotationCurrent, user.id);
-    toastMessageLogin(result.data.status);
 
-    setUser(result.data.user);
+    if (
+      auxAnnotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content !==
+      user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content
+    ) {
+      const userAux = user;
+      userAux.annotations = auxAnnotationCurrent;
+      const aux = usersAll.map((user: UserProps) => {
+        if (user.id === userAux.id) {
+          return userAux;
+        }
+        return user;
+      });
+      setUser(userAux);
+      setUsersAll(aux);
+      localStorage.setItem("users-all-notion", JSON.stringify(usersAll));
+    }
+
+    toastMessage(
+      auxAnnotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content !==
+        user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content,
+    );
   }
 
-  function toastMessageLogin(message: string | AxiosError) {
+  function toastMessage(message: boolean) {
     const toastMessage: ToastMessageData = {
-      message: !(message instanceof AxiosError) ? message : message,
-      status: !(message instanceof AxiosError) ? "success" : "error",
+      message: message ? "Anotação Editada com sucesso!" : "Não houve mudança na anotação",
+      status: message ? "success" : "error",
     };
 
     toast[toastMessage.status](toastMessage.message, {

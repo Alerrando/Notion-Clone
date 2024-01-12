@@ -63,20 +63,23 @@ export const UserValueDefault: UserProps = {
 
 const userDTOValuesDefault: UserDTOProps = {
   id: "",
-  role: "",
+  role: "USER",
   annotations: [],
 };
 
 export type ContextProps = {
+  usersAll: UserProps[];
+  setUsersAll: (usersAll: UserProps[]) => void;
   user: UserDTOProps;
   setUser: (user: UserDTOProps) => void;
-  EventLogRegister: (data: UserProps, eventTypeData: string, eventDetailsData: string) => void;
+  eventLogRegister: (data: UserProps, eventTypeData: string, eventDetailsData: string) => void;
   verifyRoleUser: () => void;
 };
 
 export const StoreContext = createContext<ContextProps>({} as ContextProps);
 
 export function UseNotionContext({ children }: IPropsContext) {
+  const [usersAll, setUsersAll] = useState<UserProps[]>([]);
   const [user, setUser] = useState<UserDTOProps>(userDTOValuesDefault);
 
   async function eventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
@@ -107,7 +110,7 @@ export function UseNotionContext({ children }: IPropsContext) {
   }
 
   return (
-    <StoreContext.Provider value={{ user, setUser, eventLogRegister, verifyRoleUser }}>
+    <StoreContext.Provider value={{ usersAll, setUsersAll, user, setUser, eventLogRegister, verifyRoleUser }}>
       {children}
     </StoreContext.Provider>
   );

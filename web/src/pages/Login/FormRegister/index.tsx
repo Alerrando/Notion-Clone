@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { IoPersonOutline } from "react-icons/io5";
@@ -8,10 +7,10 @@ import { SiNotion } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import uuid from "react-uuid";
 import { z } from "zod";
-import { createRegister } from "../../../api";
 import { UserValueDefault, useAuth } from "../../../context";
-import { ToastMessageData, TokenUser, UserDTOProps, UserProps } from "../../../context/types";
+import { ToastMessageData, UserProps } from "../../../context/types";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -33,7 +32,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { setUser } = useAuth();
+  const { usersAll, setUsersAll, setUser } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -141,32 +140,37 @@ export function FormRegister({ setPages }: FormRegisterProps) {
       ...rest,
     };
 
-    const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
-    if (!(responseRegister instanceof AxiosError)) {
-      const aux: UserDTOProps = {
-        id: responseRegister.data.user.id,
-        annotations: responseRegister.data.user.annotations,
-        role: responseRegister.data.user.role,
+    const verifyRegister = usersAll.find(
+      (user: UserProps) => user.email === infoUserValues.email && user.password === infoUserValues.password,
+    )?.id;
+    if (verifyRegister === undefined) {
+      const aux: UserProps = {
+        id: uuid(),
+        annotations: infoUserValues.annotations,
+        role: infoUserValues.role,
+        ...rest,
       };
 
       setUser(aux);
-      localStorage.setItem("user-notion", aux.id);
+      const auxUsersAll = usersAll;
+      auxUsersAll.push(aux);
+      setUsersAll(auxUsersAll);
 
       setTimeout(() => {
+        localStorage.setItem("user-notion", aux.id);
+        localStorage.setItem("users-all-notion", JSON.stringify(usersAll));
         navigate(`/editor/${aux.annotations[0].id}`);
       }, 5000);
     }
 
-    toastMessage(responseRegister);
+    toastMessage(verifyRegister);
   }
 }
 
-function toastMessage(message: TokenUser | AxiosError) {
+function toastMessage(message: string | undefined) {
   const toastMessage: ToastMessageData = {
-    message: !(message instanceof AxiosError)
-      ? "Você foi cadastrado com sucesso, Você será redirecionado!"
-      : message.response?.data.message,
-    status: !(message instanceof AxiosError) ? "success" : "error",
+    message: !message ? "Você foi cadastrado com sucesso, Você será redirecionado!" : "Erro ao fazer cadastro!",
+    status: !message ? "success" : "error",
   };
   toast[toastMessage.status](toastMessage.message, {
     position: "bottom-left",
