@@ -9,27 +9,39 @@ import { useAuth } from "./context";
 import { UserProps } from "./context/types";
 
 export function App() {
-  const { setUsersAll, setUser, user, verifyRoleUser } = useAuth();
+  const { usersAll, setUsersAll, setUser, user, verifyRoleUser } = useAuth();
   const [addPageModal, setAddPageModal] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.id?.length === 0) {
-      const getUsersAll: UserProps[] = JSON.parse(localStorage.getItem("users-all-notion"));
-      const idUser: string | undefined = localStorage.getItem("user-notion");
+    if (user?.id?.length === 0 || usersAll.length === 0) {
+      const getUsersAll: UserProps[] = JSON.parse(localStorage.getItem("users-all-notion") as string);
+      const idUser: string | undefined = localStorage.getItem("user-notion") as string;
       const getUser = getUsersAll.find((user: UserProps) => user.id === idUser);
-      if (getUsersAll || getUser) {
+      if (getUsersAll && getUser) {
         setUsersAll(getUsersAll);
         setUser(getUser);
 
-        setTimeout(() => {
-          navigate(`/editor/${getUser.annotations.id}`);
-        }, 5000);
+        navigate(`/editor/${getUser.annotations[0].id}`);
       }
+
+      setTimeout(() => {
+        setLoading(true);
+      }, 5000);
     }
 
     verifyRoleUser && verifyRoleUser();
   }, []);
+
+  if (!loading && user.id.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <div className="h-12 w-12 bg-white border-4 border-black rounded-full animate-spin relative after:w-6 after:h-6 after:absolute after:block after:-right-2 after:-bottom-2 after:bg-white after:rounded-full"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="min-h-screen flex items-center justify-center text-zinc-50 bg-white dark:bg-[#2e2e2f] overflow-y-auto">

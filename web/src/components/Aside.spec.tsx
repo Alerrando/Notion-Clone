@@ -3,7 +3,7 @@ import { Aside } from "./Aside";
 
 describe("Aside Component", () => {
   it("aside renders correctly", () => {
-    const { getByText } = render(<Aside></Aside>);
+    const { getByText } = render(<Aside handleChangeValuePageModal={() => {}}></Aside>);
 
     expect(getByText("Arquivos")).toBeInTheDocument();
   });

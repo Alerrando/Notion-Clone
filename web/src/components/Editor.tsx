@@ -14,19 +14,18 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../context";
-import { AnnotationType, ToastMessageData, UserProps } from "../context/types";
+import { AnnotationType, UserProps } from "../context/types";
+import "./Editor.css";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
 
-export interface EditorProps {}
-
 export function Editor() {
   const { usersAll, setUsersAll, user, setUser } = useAuth();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
-    user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content,
+    user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content,
   );
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
@@ -44,8 +43,6 @@ export function Editor() {
       },
     },
   });
-
-  console.log(usersAll);
 
   useEffect(() => {
     const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
@@ -253,9 +250,12 @@ export function Editor() {
     ) {
       const userAux = user;
       userAux.annotations = auxAnnotationCurrent;
-      const aux = usersAll.map((user: UserProps) => {
+      const aux: UserProps = usersAll.map((user: UserProps) => {
         if (user.id === userAux.id) {
-          return userAux;
+          return {
+            ...userAux,
+            ...user,
+          };
         }
         return user;
       });
@@ -271,7 +271,7 @@ export function Editor() {
   }
 
   function toastMessage(message: boolean) {
-    const toastMessage: ToastMessageData = {
+    const toastMessage: { message: string; status: "success" | "error" } = {
       message: message ? "Anotação Editada com sucesso!" : "Não houve mudança na anotação",
       status: message ? "success" : "error",
     };

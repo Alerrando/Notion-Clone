@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import uuid from "react-uuid";
 import { z } from "zod";
 import { UserValueDefault, useAuth } from "../../../context";
-import { ToastMessageData, UserProps } from "../../../context/types";
+import { UserProps } from "../../../context/types";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -168,7 +168,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
 }
 
 function toastMessage(message: string | undefined) {
-  const toastMessage: ToastMessageData = {
+  const toastMessage: { message: string; status: "success" | "error" } = {
     message: !message ? "Você foi cadastrado com sucesso, Você será redirecionado!" : "Erro ao fazer cadastro!",
     status: !message ? "success" : "error",
   };

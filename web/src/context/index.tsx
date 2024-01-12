@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import uuid from "react-uuid";
-import { createEventLog } from "../api";
 import { routesRole } from "../routes";
-import { EventLog, RouterRole, UserDTOProps, UserProps } from "./typesContext";
+import { RouterRole, UserDTOProps, UserProps } from "./types";
 
 type IPropsContext = {
   children: React.ReactNode;
@@ -72,7 +71,6 @@ export type ContextProps = {
   setUsersAll: (usersAll: UserProps[]) => void;
   user: UserDTOProps;
   setUser: (user: UserDTOProps) => void;
-  eventLogRegister: (data: UserProps, eventTypeData: string, eventDetailsData: string) => void;
   verifyRoleUser: () => void;
 };
 
@@ -81,10 +79,6 @@ export const StoreContext = createContext<ContextProps>({} as ContextProps);
 export function UseNotionContext({ children }: IPropsContext) {
   const [usersAll, setUsersAll] = useState<UserProps[]>([]);
   const [user, setUser] = useState<UserDTOProps>(userDTOValuesDefault);
-
-  async function eventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
-    await createEventLogRegister(data, eventTypeData, eventDetailsData);
-  }
 
   function verifyRoleUser() {
     const pathName = window.location.pathname;
@@ -97,20 +91,8 @@ export function UseNotionContext({ children }: IPropsContext) {
     }
   }
 
-  async function createEventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
-    const dataLog: EventLog = {
-      id: "0",
-      user: data,
-      timestamp: Date.now(),
-      eventType: eventTypeData,
-      eventDetails: eventDetailsData,
-    };
-
-    await createEventLog(dataLog);
-  }
-
   return (
-    <StoreContext.Provider value={{ usersAll, setUsersAll, user, setUser, eventLogRegister, verifyRoleUser }}>
+    <StoreContext.Provider value={{ usersAll, setUsersAll, user, setUser, verifyRoleUser }}>
       {children}
     </StoreContext.Provider>
   );

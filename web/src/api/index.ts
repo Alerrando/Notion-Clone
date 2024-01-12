@@ -1,6 +1,5 @@
 import axios from "axios";
-import { AuthenticationDTO, EventLog } from "../context";
-import { AnnotationType } from "../context/types";
+import { AnnotationType, AuthenticationDTO, EventLog } from "../context/types";
 import { CreateFormRegisterData } from "../pages/Login/FormRegister";
 
 const api = "http://localhost:9090";
@@ -8,9 +7,6 @@ const api = "http://localhost:9090";
 export function getAllUsers() {
   const aux = axios
     .get(`${api}/user`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
       withCredentials: true,
     })
     .then((response) => response)
@@ -21,9 +17,7 @@ export function getAllUsers() {
 
 export function getLogin(user: AuthenticationDTO) {
   const aux = axios
-    .post(`${api}/user/find`, user, {
-      withCredentials: true,
-    })
+    .post(`${api}/user/find`, user)
     .then((response) => response)
     .catch((error) => error);
 
@@ -32,9 +26,7 @@ export function getLogin(user: AuthenticationDTO) {
 
 export function createRegister(info: CreateFormRegisterData) {
   const aux = axios
-    .post(`${api}/user`, info, {
-      withCredentials: true,
-    })
+    .post(`${api}/user`, info)
     .then((response) => response)
     .catch((error) => error);
 
@@ -43,9 +35,7 @@ export function createRegister(info: CreateFormRegisterData) {
 
 export function updateAnnotation(annotations: AnnotationType[], id: string) {
   const aux = axios
-    .put(`${api}/user/${id}`, annotations, {
-      withCredentials: true,
-    })
+    .put(`${api}/user/${id}`, annotations)
     .then((response) => response)
     .catch((error) => error);
 
@@ -55,9 +45,7 @@ export function updateAnnotation(annotations: AnnotationType[], id: string) {
 // ------------------------- API EventLog -------------------------
 export function getFindAllEventLog() {
   const aux = axios
-    .get(`${api}/event-log`, {
-      withCredentials: true,
-    })
+    .get(`${api}/event-log`)
     .then((response) => response.data)
     .catch((error) => error);
 
@@ -66,9 +54,7 @@ export function getFindAllEventLog() {
 
 export function getEventLogById(id: number) {
   const aux = axios
-    .get(`${api}/event-log/${id}`, {
-      withCredentials: true,
-    })
+    .get(`${api}/event-log/${id}`)
     .then((response) => response.data)
     .catch((error) => error);
 
@@ -77,9 +63,7 @@ export function getEventLogById(id: number) {
 
 export function createEventLog(dataLog: EventLog) {
   const aux = axios
-    .post(`${api}/event-log`, dataLog, {
-      withCredentials: true,
-    })
+    .post(`${api}/event-log`, dataLog)
     .then((response) => response)
     .catch((error) => error);
 

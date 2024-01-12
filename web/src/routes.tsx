@@ -10,7 +10,7 @@ export const routesRole: RouterRole[] = [
   },
   {
     path: "/",
-    role: "",
+    role: "USER",
   },
 ];
 

@@ -8,7 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { useAuth } from "../../../context";
-import { ToastMessageData, UserDTOProps, UserProps } from "../../../context/types";
+import { UserDTOProps, UserProps } from "../../../context/types";
 
 const createFormSchema = z.object({
   email: z.string().email().nonempty("Digite seu email"),
@@ -144,7 +144,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
   }
 
   function toastMessageLogin(message: UserDTOProps | undefined) {
-    const toastMessage: ToastMessageData = {
+    const toastMessage: { message: string; status: "success" | "error" } = {
       message: message
         ? "Login feito com sucesso, Você será redirecionado!"
         : "Erro ao fazer login, confira os dados novamente",

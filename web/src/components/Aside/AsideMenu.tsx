@@ -12,7 +12,7 @@ export function AsideMenu({ menuList }: AsideMenuProps) {
         <li
           className="w-full flex flex-row gap-2 items-center py-[6px] px-2 rounded-md cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-600"
           key={index}
-          onClick={() => list.openMenuList()}
+          onClick={() => list.openMenuList && list.openMenuList()}
         >
           <list.icon className="min-w-[26px] min-h-[26px] md:min-w-[20px] md:min-h-[20px]" />
           <span className="text-sm md:text-xs">{list.name}</span>
