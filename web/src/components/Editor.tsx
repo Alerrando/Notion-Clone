@@ -14,15 +14,19 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../context";
-import { AnnotationType, UserProps } from "../context/types";
+import { AnnotationType } from "../context/types";
 import "./Editor.css";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
 
-export function Editor() {
-  const { usersAll, setUsersAll, user, setUser } = useAuth();
+type EditorProps = {
+  newContent: boolean;
+};
+
+export function Editor({ newContent }: EditorProps) {
+  const { user, updateUserAnnotation } = useAuth();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
     user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content,
@@ -36,7 +40,7 @@ export function Editor() {
         lowlight,
       }),
     ],
-    content: currentEditor,
+    content: !newContent && currentEditor,
     editorProps: {
       attributes: {
         class: "h-full outline-none z-10",
@@ -45,10 +49,12 @@ export function Editor() {
   });
 
   useEffect(() => {
-    const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
-    setCurrentEditor(newContent);
-    if (editor && newContent) {
-      editor.chain().setContent(newContent).run();
+    if (!newContent) {
+      const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
+      setCurrentEditor(newContent);
+      if (editor && newContent) {
+        editor.chain().setContent(newContent).run();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -222,52 +228,34 @@ export function Editor() {
   );
 
   async function handleSaveEditTask() {
-    const currentContent = editor?.getHTML();
+    if (!editor) return;
 
-    const arrayCurrent: string[] | undefined = editor
-      ?.getHTML()
+    const currentContent = editor.getHTML();
+    const arrayCurrent = editor
+      .getHTML()
       .split(/<(\/?\w+)>/)
       .filter(Boolean);
 
-    const auxAnnotationCurrent: AnnotationType[] = user.annotations.map((annotation: AnnotationType) => {
-      if (annotation.id === id && arrayCurrent && currentContent) {
-        const auxAnnotation: AnnotationType = {
-          id: annotation.id,
-          title: arrayCurrent[1],
-          content: currentContent,
-          lastUpdate: new Date(),
-          createdBy: annotation.createdBy,
-        };
-
-        return auxAnnotation;
-      }
-      return annotation;
-    });
-
-    if (
-      auxAnnotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content !==
-      user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content
-    ) {
-      const userAux = user;
-      userAux.annotations = auxAnnotationCurrent;
-      const aux: UserProps = usersAll.map((user: UserProps) => {
-        if (user.id === userAux.id) {
-          return {
-            ...userAux,
-            ...user,
-          };
-        }
-        return user;
-      });
-      setUser(userAux);
-      setUsersAll(aux);
-      localStorage.setItem("users-all-notion", JSON.stringify(usersAll));
-    }
-
-    toastMessage(
-      auxAnnotationCurrent.find((annotation: AnnotationType) => annotation.id === id)?.content !==
-        user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content,
+    const auxAnnotationCurrent = user.annotations.map((annotation) =>
+      annotation.id === id && arrayCurrent
+        ? {
+            ...annotation,
+            title: arrayCurrent[1],
+            content: currentContent,
+            lastUpdate: new Date(),
+          }
+        : annotation,
     );
+
+    const contentChanged =
+      auxAnnotationCurrent.find((annotation) => annotation.id === id)?.content !==
+      user.annotations.find((annotation) => annotation.id === id)?.content;
+
+    toastMessage(contentChanged);
+
+    if (contentChanged) {
+      updateUserAnnotation(undefined, false, auxAnnotationCurrent);
+    }
   }
 
   function toastMessage(message: boolean) {

@@ -18,7 +18,7 @@ import { TbClockHour9 } from "react-icons/tb";
 import uuid from "react-uuid";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../context";
-import { AnnotationType, UserProps } from "../context/types";
+import { AnnotationType } from "../context/types";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 type ModalAddContentProps = {
@@ -29,7 +29,7 @@ lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
 
 export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
-  const { usersAll, setUsersAll, user, setUser } = useAuth();
+  const { user, setUser, updateUserAnnotation } = useAuth();
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
   const editor = useEditor({
@@ -279,20 +279,7 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
         lastUpdate: new Date(),
         createdBy: new Date(),
       };
-      const userAux = user;
-      userAux.annotations.push(newAnnotation);
-      const aux: UserProps = usersAll.map((user: UserProps) => {
-        if (user.id === userAux.id) {
-          return {
-            ...userAux,
-            ...user,
-          };
-        }
-        return user;
-      });
-      setUser(userAux);
-      setUsersAll(aux);
-      localStorage.setItem("users-all-notion", JSON.stringify(usersAll));
+      updateUserAnnotation(newAnnotation, true, undefined);
 
       setAddPageModal(false);
     }

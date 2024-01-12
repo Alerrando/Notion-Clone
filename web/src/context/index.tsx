@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import uuid from "react-uuid";
 import { routesRole } from "../routes";
-import { RouterRole, UserDTOProps, UserProps } from "./types";
+import { AnnotationType, RouterRole, UserDTOProps, UserProps } from "./types";
 
 type IPropsContext = {
   children: React.ReactNode;
@@ -72,6 +72,11 @@ export type ContextProps = {
   user: UserDTOProps;
   setUser: (user: UserDTOProps) => void;
   verifyRoleUser: () => void;
+  updateUserAnnotation: (
+    newAnnotation: AnnotationType,
+    isNewAnnotation: boolean,
+    annotationsAllUser?: AnnotationType[],
+  ) => void;
 };
 
 export const StoreContext = createContext<ContextProps>({} as ContextProps);
@@ -91,8 +96,34 @@ export function UseNotionContext({ children }: IPropsContext) {
     }
   }
 
+  function updateUserAnnotation(
+    newAnnotation?: AnnotationType,
+    isNewAnnotation: boolean,
+    annotationsAllUser?: AnnotationType[],
+  ) {
+    const userAux = user;
+    isNewAnnotation && newAnnotation && userAux.annotations.push(newAnnotation);
+
+    if (!isNewAnnotation && annotationsAllUser) {
+      userAux.annotations = annotationsAllUser;
+    }
+    const aux: UserProps[] = usersAll.map((user: UserProps) => {
+      if (user.id === userAux.id) {
+        return {
+          ...userAux,
+          ...user,
+        };
+      }
+      return user;
+    });
+    setUser(userAux);
+    setUsersAll(aux);
+
+    localStorage.setItem("users-all-notion", JSON.stringify(usersAll));
+  }
+
   return (
-    <StoreContext.Provider value={{ usersAll, setUsersAll, user, setUser, verifyRoleUser }}>
+    <StoreContext.Provider value={{ usersAll, setUsersAll, user, setUser, verifyRoleUser, updateUserAnnotation }}>
       {children}
     </StoreContext.Provider>
   );
