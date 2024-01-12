@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { LuSettings2 } from "react-icons/lu";
 import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrikethrough } from "react-icons/rx";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
@@ -22,11 +21,12 @@ lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
 
 type EditorProps = {
-  newContent: boolean;
+  isNewContent: boolean;
+  saveAnnotation: (getHtml: string | undefined, id?: string) => void;
 };
 
-export function Editor({ newContent }: EditorProps) {
-  const { user, updateUserAnnotation } = useAuth();
+export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
+  const { user } = useAuth();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
     user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content,
@@ -40,7 +40,7 @@ export function Editor({ newContent }: EditorProps) {
         lowlight,
       }),
     ],
-    content: !newContent && currentEditor,
+    content: !isNewContent ? currentEditor : "",
     editorProps: {
       attributes: {
         class: "h-full outline-none z-10",
@@ -49,13 +49,15 @@ export function Editor({ newContent }: EditorProps) {
   });
 
   useEffect(() => {
-    if (!newContent) {
+    if (!isNewContent) {
       const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
       setCurrentEditor(newContent);
       if (editor && newContent) {
         editor.chain().setContent(newContent).run();
       }
     }
+
+    localStorage.setItem("annotation-current", id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -75,7 +77,7 @@ export function Editor({ newContent }: EditorProps) {
         <div className="w-full h-auto flex items-center justify-end">
           <button
             className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 dark:text-white hover:text-white"
-            onClick={() => handleSaveEditTask()}
+            onClick={() => saveAnnotation(editor?.getHTML(), id)}
           >
             Salvar
           </button>
@@ -226,53 +228,4 @@ export function Editor({ newContent }: EditorProps) {
       )}
     </>
   );
-
-  async function handleSaveEditTask() {
-    if (!editor) return;
-
-    const currentContent = editor.getHTML();
-    const arrayCurrent = editor
-      .getHTML()
-      .split(/<(\/?\w+)>/)
-      .filter(Boolean);
-
-    const auxAnnotationCurrent = user.annotations.map((annotation) =>
-      annotation.id === id && arrayCurrent
-        ? {
-            ...annotation,
-            title: arrayCurrent[1],
-            content: currentContent,
-            lastUpdate: new Date(),
-          }
-        : annotation,
-    );
-
-    const contentChanged =
-      auxAnnotationCurrent.find((annotation) => annotation.id === id)?.content !==
-      user.annotations.find((annotation) => annotation.id === id)?.content;
-
-    toastMessage(contentChanged);
-
-    if (contentChanged) {
-      updateUserAnnotation(undefined, false, auxAnnotationCurrent);
-    }
-  }
-
-  function toastMessage(message: boolean) {
-    const toastMessage: { message: string; status: "success" | "error" } = {
-      message: message ? "Anotação Editada com sucesso!" : "Não houve mudança na anotação",
-      status: message ? "success" : "error",
-    };
-
-    toast[toastMessage.status](toastMessage.message, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  }
 }

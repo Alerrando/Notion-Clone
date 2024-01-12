@@ -140,6 +140,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
   );
 
   function changingAnnotationCurrent(contextUser: AnnotationType) {
-    navigate(`/editor/${contextUser?.id}`);
+    localStorage.setItem("annotation-current", contextUser.id);
+    navigate(`/editor/${contextUser.id}`);
   }
 }

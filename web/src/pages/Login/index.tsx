@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context";
 import { FormLogin } from "./FormLogin";
 import { FormRegister } from "./FormRegister";
 import "./style.css";
@@ -6,6 +8,17 @@ import "./style.css";
 export function Login() {
   const [pages, setPages] = useState<boolean>(false);
   const [animationClass, setAnimationClass] = useState<string>("");
+  const { getDatasLocalStorage } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const annotationId: string = getDatasLocalStorage();
+    if (annotationId.length > 0) {
+      navigate(`/editor/${annotationId}`);
+    } else {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <main

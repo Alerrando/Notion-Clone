@@ -77,6 +77,7 @@ export type ContextProps = {
     isNewAnnotation: boolean,
     annotationsAllUser?: AnnotationType[],
   ) => void;
+  getDatasLocalStorage: () => string;
 };
 
 export const StoreContext = createContext<ContextProps>({} as ContextProps);
@@ -97,9 +98,9 @@ export function UseNotionContext({ children }: IPropsContext) {
   }
 
   function updateUserAnnotation(
-    newAnnotation?: AnnotationType,
+    newAnnotation: AnnotationType | undefined,
     isNewAnnotation: boolean,
-    annotationsAllUser?: AnnotationType[],
+    annotationsAllUser: AnnotationType[] | undefined,
   ) {
     const userAux = user;
     isNewAnnotation && newAnnotation && userAux.annotations.push(newAnnotation);
@@ -122,8 +123,24 @@ export function UseNotionContext({ children }: IPropsContext) {
     localStorage.setItem("users-all-notion", JSON.stringify(usersAll));
   }
 
+  function getDatasLocalStorage() {
+    if (user?.id?.length === 0 || usersAll.length === 0) {
+      const getUsersAll: UserProps[] = JSON.parse(localStorage.getItem("users-all-notion") as string);
+      const idUser: string | undefined = localStorage.getItem("user-notion") as string;
+      const getUser = getUsersAll.find((user: UserProps) => user.id === idUser);
+      if (getUsersAll && getUser) {
+        setUsersAll(getUsersAll);
+        setUser(getUser);
+      }
+      const annotationCurrent = localStorage.getItem("annotation-current") as string;
+      return annotationCurrent || "";
+    }
+  }
+
   return (
-    <StoreContext.Provider value={{ usersAll, setUsersAll, user, setUser, verifyRoleUser, updateUserAnnotation }}>
+    <StoreContext.Provider
+      value={{ usersAll, setUsersAll, user, setUser, verifyRoleUser, updateUserAnnotation, getDatasLocalStorage }}
+    >
       {children}
     </StoreContext.Provider>
   );

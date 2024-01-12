@@ -1,35 +1,31 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 import { ModalAddContent } from "./components/ModalAddContent";
 import { useAuth } from "./context";
-import { UserProps } from "./context/types";
 
 export function App() {
-  const { usersAll, setUsersAll, setUser, user, verifyRoleUser } = useAuth();
+  const { user, verifyRoleUser, updateUserAnnotation, getDatasLocalStorage } = useAuth();
   const [addPageModal, setAddPageModal] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.id?.length === 0 || usersAll.length === 0) {
-      const getUsersAll: UserProps[] = JSON.parse(localStorage.getItem("users-all-notion") as string);
-      const idUser: string | undefined = localStorage.getItem("user-notion") as string;
-      const getUser = getUsersAll.find((user: UserProps) => user.id === idUser);
-      if (getUsersAll && getUser) {
-        setUsersAll(getUsersAll);
-        setUser(getUser);
-
-        navigate(`/editor/${getUser.annotations[0].id}`);
+    if (user.id.length === 0) {
+      const annotationId: string = getDatasLocalStorage();
+      if (annotationId.length > 0) {
+        navigate(`/editor/${annotationId}`);
+      } else {
+        navigate("/");
       }
-
-      setTimeout(() => {
-        setLoading(true);
-      }, 5000);
     }
+
+    setTimeout(() => {
+      setLoading(true);
+    }, 5000);
 
     verifyRoleUser && verifyRoleUser();
   }, []);
@@ -53,7 +49,7 @@ export function App() {
           </aside>
 
           <main className="w-full h-full py-4 md:p-4 bg-zinc-100 dark:bg-[#2e2e2f] overflow-y-auto">
-            <Editor />
+            <Editor isNewContent={false} saveAnnotation={handleSaveEditTask} />
           </main>
         </div>
 
@@ -66,5 +62,53 @@ export function App() {
 
   function handleChangeValuePageModal() {
     setAddPageModal(!addPageModal);
+  }
+
+  async function handleSaveEditTask(getHTML: string | undefined, id: string) {
+    if (!getHTML) return;
+
+    const currentContent = getHTML();
+    const arrayCurrent = getHTML()
+      .split(/<(\/?\w+)>/)
+      .filter(Boolean);
+
+    const auxAnnotationCurrent = user.annotations.map((annotation) =>
+      annotation.id === id && arrayCurrent
+        ? {
+            ...annotation,
+            title: arrayCurrent[1],
+            content: currentContent,
+            lastUpdate: new Date(),
+          }
+        : annotation,
+    );
+
+    const contentChanged =
+      auxAnnotationCurrent.find((annotation) => annotation.id === id)?.content !==
+      user.annotations.find((annotation) => annotation.id === id)?.content;
+
+    toastMessage(contentChanged);
+
+    if (contentChanged) {
+      updateUserAnnotation(undefined, false, auxAnnotationCurrent);
+    }
+  }
+
+  function toastMessage(message: boolean) {
+    const toastMessage: { message: string; status: "success" | "error" } = {
+      message: message ? "Anotação Editada com sucesso!" : "Não houve mudança na anotação",
+      status: message ? "success" : "error",
+    };
+
+    toast[toastMessage.status](toastMessage.message, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   }
 }
