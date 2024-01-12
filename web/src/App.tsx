@@ -64,13 +64,11 @@ export function App() {
     setAddPageModal(!addPageModal);
   }
 
-  async function handleSaveEditTask(getHTML: string | undefined, id: string) {
+  function handleSaveEditTask(getHTML: string | undefined, id: string) {
     if (!getHTML) return;
 
-    const currentContent = getHTML();
-    const arrayCurrent = getHTML()
-      .split(/<(\/?\w+)>/)
-      .filter(Boolean);
+    const currentContent = getHTML;
+    const arrayCurrent = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
 
     const auxAnnotationCurrent = user.annotations.map((annotation) =>
       annotation.id === id && arrayCurrent

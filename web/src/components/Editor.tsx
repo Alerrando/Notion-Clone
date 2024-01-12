@@ -57,7 +57,8 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
       }
     }
 
-    localStorage.setItem("annotation-current", id);
+    if (id) localStorage.setItem("annotation-current", id);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 

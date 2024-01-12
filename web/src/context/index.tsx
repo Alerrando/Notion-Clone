@@ -73,9 +73,9 @@ export type ContextProps = {
   setUser: (user: UserDTOProps) => void;
   verifyRoleUser: () => void;
   updateUserAnnotation: (
-    newAnnotation: AnnotationType,
+    newAnnotation: AnnotationType | undefined,
     isNewAnnotation: boolean,
-    annotationsAllUser?: AnnotationType[],
+    annotationsAllUser?: AnnotationType[] | undefined,
   ) => void;
   getDatasLocalStorage: () => string;
 };
@@ -132,8 +132,12 @@ export function UseNotionContext({ children }: IPropsContext) {
         setUsersAll(getUsersAll);
         setUser(getUser);
       }
-      const annotationCurrent = localStorage.getItem("annotation-current") as string;
-      return annotationCurrent || "";
+      const annotationCurrent: string | null = localStorage.getItem("annotation-current");
+      if (annotationCurrent !== null) {
+        return annotationCurrent;
+      }
+
+      return "";
     }
   }
 

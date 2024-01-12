@@ -8,12 +8,12 @@ import { IoIosStarOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { SlSizeFullscreen } from "react-icons/sl";
 import { TbClockHour9 } from "react-icons/tb";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import uuid from "react-uuid";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
 import { Editor } from "./Editor";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 type ModalAddContentProps = {
   setAddPageModal: (addPageModal: boolean) => void;
@@ -86,11 +86,9 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
 
   function addNewAnnotationFromEditor(getHTML: string | undefined) {
     if (!getHTML) return;
-    const currentContent = getHTML();
+    const currentContent = getHTML;
 
-    const arrayCurrent: string[] | undefined = getHTML()
-      .split(/<(\/?\w+)>/)
-      .filter(Boolean);
+    const arrayCurrent: string[] | undefined = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
 
     if (currentContent && arrayCurrent) {
       const newAnnotation: AnnotationType = {
