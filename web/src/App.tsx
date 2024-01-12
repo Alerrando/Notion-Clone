@@ -17,13 +17,11 @@ export function App() {
     if (user?.id?.length === 0) {
       const getUsersAll: UserProps[] = JSON.parse(localStorage.getItem("users-all-notion"));
       const idUser: string | undefined = localStorage.getItem("user-notion");
-      console.log(idUser);
       const getUser = getUsersAll.find((user: UserProps) => user.id === idUser);
       if (getUsersAll || getUser) {
         setUsersAll(getUsersAll);
         setUser(getUser);
 
-        console.log(getUser, getUsersAll);
         setTimeout(() => {
           navigate(`/editor/${getUser.annotations.id}`);
         }, 5000);
