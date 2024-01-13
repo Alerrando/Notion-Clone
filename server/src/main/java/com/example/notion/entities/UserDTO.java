@@ -5,25 +5,16 @@ import com.example.notion.Enum.UserRole;
 import java.util.List;
 
 public class UserDTO {
-    private String id;
     private List<Annotation> annotations;
     private UserRole role;
 
     public UserDTO(){
     }
 
-    public UserDTO(String id, List<Annotation> annotations, UserRole role) {
-        this.id = id;
+    public UserDTO(List<Annotation> annotations, UserRole role) {
+
         this.annotations = annotations;
         this.role = role;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public List<Annotation> getAnnotations() {

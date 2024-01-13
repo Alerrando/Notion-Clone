@@ -2,12 +2,14 @@ package com.example.notion.services;
 
 import com.example.notion.entities.*;
 import com.example.notion.repositorys.UserRepository;
+import com.example.notion.util.Util;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +22,15 @@ import java.util.*;
 @Service
 @Validated
 public class UserService implements UserDetailsService {
+    @Autowired
+    private HttpServletResponse response;
+
+    @Value("${jwt.cookieExpiry}")
+    private int cookieExpiry;
+
+    @Autowired
+    Util util;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -37,13 +48,18 @@ public class UserService implements UserDetailsService {
     public ResponseEntity findUser(AuthenticationDTO authenticationDTO) {
         try {
             User user = (User) userRepository.findUser(authenticationDTO.getEmail());
-            if(user.getEmail().equals(authenticationDTO.getEmail())){
-                tokenService.generateToken(authenticationDTO);
+            if(user != null && user.getEmail().equals(authenticationDTO.getEmail())){
+                AuthenticationDTO auxAuthenticationDTO = new AuthenticationDTO(user.getEmail(), user.getPassword());
+                tokenService.generateToken(auxAuthenticationDTO);
 
                 EventLog eventLog = new EventLog(0, user, new Date(),"Login", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
                 eventLogService.create(eventLog);
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(user);
+                this.addIdUserCookie(user.getId());
+                UserDTO userDTO = new UserDTO(user.getAnnotations(), user.getRole());
+
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(userDTO);
             }
+
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
         } catch (Exception e){
@@ -63,11 +79,13 @@ public class UserService implements UserDetailsService {
                 tokenService.generateToken(authenticationDTO);
 
                 userRepository.save(user);
+                this.addIdUserCookie(user.getId());
 
                 EventLog eventLog = new EventLog(0, user, new Date(),"Registro", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
                 eventLogService.create(eventLog);
+                UserDTO userDTO = new UserDTO(user.getAnnotations(), user.getRole());
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(user);
+                return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
             }
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário Já Cadastrado");
@@ -77,28 +95,18 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity updateAnnotation(List<Annotation> annotations, String idUser){
-        try {
-            Optional<User> user = userRepository.findById(idUser);
-            Map<String, Object> response = new HashMap<>();
-
-            if(user.isEmpty()){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
-            }
-            user.get().setAnnotations(annotations);
-            UserDTO userDTO = new UserDTO(user.get().getId(), user.get().getAnnotations(), user.get().getRole());
-            response.put("user", userDTO);
-            response.put("status", "Página atualizada com sucesso!");
-
-            userRepository.save((User) user.get());
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
-        } catch (RuntimeException runtimeException){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
-        }
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findUser(username);
+    }
+
+    public void addIdUserCookie(String id){
+        Cookie cookie = new Cookie("idUser", id);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // Altere para true se estiver usando HTTPS
+        cookie.setPath("/");
+        cookie.setMaxAge(cookieExpiry);
+
+        response.addCookie(cookie);
     }
 }

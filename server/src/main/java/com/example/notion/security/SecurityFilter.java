@@ -6,12 +6,19 @@ import com.auth0.jwt.interfaces.Claim;
 import com.example.notion.repositorys.UserRepository;
 import com.example.notion.services.TokenService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +27,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.Key;
+import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -35,11 +44,14 @@ public class SecurityFilter extends OncePerRequestFilter  {
     @Autowired
     private Algorithm algorithm; // Definir o algoritmo de assinatura
 
+    @Value("${api.security.token.secret}")
+    private String secret;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("accessToken")) { // Aqui estava "Idea-7f7ef04e"
+                if (cookie.getName().equals("accessToken")) {
                     String token = cookie.getValue();
                     var subject = tokenService.validateToken(token);
                     UserDetails user = userRepository.findUser(subject);
@@ -50,22 +62,5 @@ public class SecurityFilter extends OncePerRequestFilter  {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Map<String, Claim> claims = extractAllClaims(token);
-        return claimsResolver.apply((Claims) claims.get(token));
-    }
-
-    private Map<String, Claim> extractAllClaims(String token) {
-        return JWT.require(algorithm)
-                .withIssuer("auth-api")
-                .build()
-                .verify(token)
-                .getClaims();
     }
 }

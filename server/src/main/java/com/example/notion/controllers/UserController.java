@@ -32,9 +32,4 @@ public class UserController {
     public ResponseEntity create(@RequestBody @Valid User user){
         return userService.create(user);
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity updateAnnotation(@RequestBody List<Annotation> annotations, @PathVariable String id){
-        return userService.updateAnnotation(annotations, id);
-    }
 }
