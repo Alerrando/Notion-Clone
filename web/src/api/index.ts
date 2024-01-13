@@ -18,7 +18,9 @@ export function getAllUsers() {
 
 export function getLogin(user: AuthenticationDTO) {
   const aux = axios
-    .post(`${api}/user/find`, user)
+    .post(`${api}/user/find`, user, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 
@@ -27,27 +29,46 @@ export function getLogin(user: AuthenticationDTO) {
 
 export function createRegister(info: CreateFormRegisterData) {
   const aux = axios
-    .post(`${api}/user`, info)
+    .post(`${api}/user`, info, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 
   return aux;
 }
 
-export function updateAnnotation(annotations: AnnotationType[], id: string) {
+// ------------------------- API Annotation ------------------------- //
+
+export function createAnnotation(annotations: AnnotationType) {
   const aux = axios
-    .put(`${api}/user/${id}`, annotations)
+    .post(`${api}/annotation`, annotations, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 
   return aux;
 }
 
-// ------------------------- API EventLog -------------------------
+export function updateAnnotation(annotations: AnnotationType[]) {
+  const aux = axios
+    .put(`${api}/annotation`, annotations, {
+      withCredentials: true,
+    })
+    .then((response) => response)
+    .catch((error) => error);
+
+  return aux;
+}
+
+// ------------------------- API EventLog ------------------------- //
 export function getFindAllEventLog() {
   const aux = axios
     .get(`${api}/event-log`)
-    .then((response) => response.data)
+    .then((response) => response.data, {
+      withCredentials: true,
+    })
     .catch((error) => error);
 
   return aux;
@@ -56,7 +77,9 @@ export function getFindAllEventLog() {
 export function getEventLogById(id: number) {
   const aux = axios
     .get(`${api}/event-log/${id}`)
-    .then((response) => response.data)
+    .then((response) => response.data, {
+      withCredentials: true,
+    })
     .catch((error) => error);
 
   return aux;
@@ -64,7 +87,9 @@ export function getEventLogById(id: number) {
 
 export function createEventLog(dataLog: EventLog) {
   const aux = axios
-    .post(`${api}/event-log`, dataLog)
+    .post(`${api}/event-log`, dataLog, {
+      withCredentials: true,
+    })
     .then((response) => response)
     .catch((error) => error);
 

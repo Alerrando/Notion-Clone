@@ -32,20 +32,23 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
   const [isFixed, setIsFixed] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const menuList: MenuListType = [
+  const menuList: MenuListType[] = [
     {
       name: "Arquivos",
       icon: AiFillFolderOpen,
+      openMenuList: () => {},
     },
 
     {
       name: "Mundaças Recentes",
       icon: BiTime,
+      openMenuList: () => {},
     },
 
     {
       name: "Configurações",
       icon: GoGear,
+      openMenuList: () => {},
     },
 
     {
@@ -137,6 +140,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
   );
 
   function changingAnnotationCurrent(contextUser: AnnotationType) {
+    localStorage.setItem("annotation-current", contextUser.id);
     navigate(`/editor/${contextUser?.id}`);
   }
 }

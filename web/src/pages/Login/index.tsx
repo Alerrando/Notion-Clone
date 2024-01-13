@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { getAllUsers } from "../../api";
+import { useState } from "react";
 import { FormLogin } from "./FormLogin";
 import { FormRegister } from "./FormRegister";
 import "./style.css";

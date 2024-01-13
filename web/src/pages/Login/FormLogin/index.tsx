@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { getLogin } from "../../../api";
 import { useAuth } from "../../../context";
-import { ToastMessageData, TokenUser, UserDTOProps } from "../../../context/types";
+import { ResponseUser, ToastMessageData, UserDTOProps } from "../../../context/types";
 
 const createFormSchema = z.object({
   email: z.string().email().nonempty("Digite seu email"),
@@ -38,10 +38,9 @@ export function FormLogin({ setPages }: FormLoginProps) {
     mutationFn: async (data) => await getLogin(data),
     onSuccess: (data) => {
       if (!(data instanceof AxiosError)) {
-        const response = data as TokenUser;
+        const response = data as ResponseUser;
 
         const aux: UserDTOProps = {
-          id: response.data.id,
           annotations: response.data.annotations,
           role: response.data.role,
         };
@@ -159,7 +158,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
     mutation.mutate(dataLogin);
   }
 
-  function toastMessageLogin(message: TokenUser | AxiosError) {
+  function toastMessageLogin(message: ResponseUser | AxiosError) {
     const toastMessage: ToastMessageData = {
       message: !(message instanceof AxiosError)
         ? "Login feito com sucesso, Você será redirecionado!"

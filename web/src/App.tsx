@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 import { ModalAddContent } from "./components/ModalAddContent";
 import { useAuth } from "./context";
+import { AnnotationType } from "./context/types";
 
 export function App() {
-  const { verifyRoleUser } = useAuth();
+  const { user, verifyRoleUser, updateUserAnnotation } = useAuth();
   const [addPageModal, setAddPageModal] = useState(false);
 
   useEffect(() => {
@@ -25,18 +26,63 @@ export function App() {
           </aside>
 
           <main className="w-full h-full py-4 md:p-4 bg-zinc-100 dark:bg-[#2e2e2f] overflow-y-auto">
-            <Editor />
+            <Editor isNewContent={false} saveAnnotation={handleSaveEditTask} />
           </main>
         </div>
-
-        <ToastContainer />
-
         {addPageModal && <ModalAddContent setAddPageModal={setAddPageModal} />}
       </div>
+
+      <ToastContainer />
     </>
   );
 
+  async function handleSaveEditTask(getHTML: string | undefined, id: string) {
+    if (!getHTML) return;
+
+    const currentContent = getHTML;
+    const arrayCurrent = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
+
+    const auxAnnotationCurrent: AnnotationType[] = user.annotations.map((annotation) =>
+      annotation.id === id && arrayCurrent
+        ? {
+            ...annotation,
+            title: arrayCurrent[1],
+            content: currentContent,
+            lastUpdate: new Date(),
+          }
+        : annotation,
+    );
+
+    const contentChanged =
+      auxAnnotationCurrent.find((annotation) => annotation.id === id)?.content !==
+      user.annotations.find((annotation) => annotation.id === id)?.content;
+
+    toastMessage(contentChanged);
+
+    if (contentChanged) {
+      await updateUserAnnotation(undefined, false, auxAnnotationCurrent);
+    }
+  }
+
   function handleChangeValuePageModal() {
     setAddPageModal(!addPageModal);
+  }
+
+  function toastMessage(message: boolean) {
+    const toastMessage: { message: string; status: "success" | "error" } = {
+      message: message ? "Anotação Editada com sucesso!" : "Não houve mudança na anotação",
+      status: message ? "success" : "error",
+    };
+
+    toast[toastMessage.status](toastMessage.message, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   }
 }

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
 import uuid from "react-uuid";
-import { createEventLog } from "../api";
+import { createAnnotation, createEventLog, getAllUsers, updateAnnotation } from "../api";
 import { routesRole } from "../routes";
+import { AnnotationType } from "./types";
 import { EventLog, RouterRole, UserDTOProps, UserProps } from "./typesContext";
 
 type IPropsContext = {
@@ -68,15 +69,24 @@ const userDTOValuesDefault: UserDTOProps = {
 };
 
 export type ContextProps = {
+  usersAll: UserProps[];
+  setUsersAll: (usersAll: UserProps[]) => void;
   user: UserDTOProps;
   setUser: (user: UserDTOProps) => void;
   EventLogRegister: (data: UserProps, eventTypeData: string, eventDetailsData: string) => void;
   verifyRoleUser: () => void;
+  updateUserAnnotation: (
+    newAnnotation: AnnotationType | undefined,
+    isNewAnnotation: boolean,
+    annotationsAllUser?: AnnotationType[] | undefined,
+  ) => void;
+  getDatasLocalStorage: () => string;
 };
 
 export const StoreContext = createContext<ContextProps>({} as ContextProps);
 
 export function UseNotionContext({ children }: IPropsContext) {
+  const [usersAll, setUsersAll] = useState<UserProps[]>([]);
   const [user, setUser] = useState<UserDTOProps>(userDTOValuesDefault);
 
   async function eventLogRegister(data: UserProps, eventTypeData: string, eventDetailsData: string) {
@@ -106,8 +116,46 @@ export function UseNotionContext({ children }: IPropsContext) {
     await createEventLog(dataLog);
   }
 
+  async function updateUserAnnotation(
+    newAnnotation: AnnotationType | undefined,
+    isNewAnnotation: boolean,
+    annotationsAllUser: AnnotationType[] | undefined,
+  ) {
+    let userAux: UserProps = user;
+
+    if (!isNewAnnotation && annotationsAllUser) {
+      const getUserUpdate = await updateAnnotation(annotationsAllUser);
+      userAux.annotations = getUserUpdate.data.user.annotations;
+    }
+    const getUsersAllUpdate: UserProps[] = await getAllUsers();
+
+    if (isNewAnnotation && newAnnotation) {
+      await createAnnotation(newAnnotation);
+      userAux = user;
+      userAux.annotations.push(newAnnotation);
+    }
+
+    setUser(userAux);
+    setUsersAll(getUsersAllUpdate);
+
+    localStorage.setItem("users-all-notion", JSON.stringify(usersAll));
+  }
+
+  async function getDatasLocalStorage() {
+    if (user?.id?.length === 0 || usersAll.length === 0) {
+      const annotationCurrent: string | null = localStorage.getItem("annotation-current");
+      if (annotationCurrent !== null) {
+        return annotationCurrent;
+      }
+
+      return "";
+    }
+  }
+
   return (
-    <StoreContext.Provider value={{ user, setUser, eventLogRegister, verifyRoleUser }}>
+    <StoreContext.Provider
+      value={{ user, setUser, eventLogRegister, verifyRoleUser, updateUserAnnotation, getDatasLocalStorage }}
+    >
       {children}
     </StoreContext.Provider>
   );

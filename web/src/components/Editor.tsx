@@ -3,7 +3,6 @@ import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { BubbleMenu, EditorContent, FloatingMenu, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { AxiosError } from "axios";
 import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import "highlight.js/styles/panda-syntax-dark.css";
@@ -12,23 +11,25 @@ import { useEffect, useState } from "react";
 import { LuSettings2 } from "react-icons/lu";
 import { RxChatBubble, RxChevronDown, RxCode, RxFontBold, RxFontItalic, RxStrikethrough } from "react-icons/rx";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { twMerge } from "tailwind-merge";
-import { updateAnnotation } from "../api";
 import { useAuth } from "../context";
-import { AnnotationType, ToastMessageData } from "../context/types";
+import { AnnotationType } from "../context/types";
+import "./Editor.css";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
 
-export interface EditorProps {}
+type EditorProps = {
+  isNewContent: boolean;
+  saveAnnotation: (getHtml: string | undefined, id?: string) => void;
+};
 
-export function Editor() {
-  const { user, setUser } = useAuth();
+export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
+  const { user } = useAuth();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
-    user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content,
+    user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content,
   );
   const toggleGroupItemClasses =
     "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
@@ -39,7 +40,7 @@ export function Editor() {
         lowlight,
       }),
     ],
-    content: currentEditor,
+    content: !isNewContent ? currentEditor : "",
     editorProps: {
       attributes: {
         class: "h-full outline-none z-10",
@@ -48,15 +49,18 @@ export function Editor() {
   });
 
   useEffect(() => {
-    const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
-    setCurrentEditor(newContent);
-    if (editor && newContent) {
-      editor.chain().setContent(newContent).run();
+    if (!isNewContent) {
+      const newContent = user?.annotations?.find((annotation: AnnotationType) => annotation.id === id)?.content;
+      setCurrentEditor(newContent);
+      if (editor && newContent) {
+        editor.chain().setContent(newContent).run();
+      }
     }
+
+    if (id) localStorage.setItem("annotation-current", id);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  console.log(user);
 
   return (
     <>
@@ -74,7 +78,7 @@ export function Editor() {
         <div className="w-full h-auto flex items-center justify-end">
           <button
             className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 dark:text-white hover:text-white"
-            onClick={() => handleSaveEditTask()}
+            onClick={() => saveAnnotation(editor?.getHTML(), id)}
           >
             Salvar
           </button>
@@ -102,7 +106,7 @@ export function Editor() {
             </Popover.Trigger>
 
             <Popover.Portal>
-              <Popover.Content className="bg-zinc-700 md:bg-zinc-200 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-50">
+              <Popover.Content className="bg-zinc-700 md:bg-zinc-200 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-[65]">
                 <div className="group" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()}>
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
@@ -130,7 +134,6 @@ export function Editor() {
                 <div
                   className=""
                   onClick={() => {
-                    console.log(findDiff(currentEditor, editor.getHTML()));
                     editor.chain().focus().toggleHeading({ level: 1 }).run();
                   }}
                 >
@@ -226,61 +229,4 @@ export function Editor() {
       )}
     </>
   );
-
-  function findDiff(str1: string, str2: string) {
-    let diff = "";
-    str2.split("").forEach((val, i) => {
-      if (val !== str1.charAt(i)) {
-        diff += val;
-      }
-    });
-
-    return diff;
-  }
-
-  async function handleSaveEditTask() {
-    const currentContent = editor?.getHTML();
-
-    const arrayCurrent: string[] = editor
-      ?.getHTML()
-      .split(/<(\/?\w+)>/)
-      .filter(Boolean);
-
-    const auxAnnotationCurrent: AnnotationType[] = user.annotations.map((annotation: AnnotationType) => {
-      if (annotation.id === id) {
-        const auxAnnotation: AnnotationType = {
-          id: annotation.id,
-          title: arrayCurrent[1],
-          content: currentContent,
-          lastUpdate: new Date(),
-          createdBy: annotation.createdBy,
-        };
-
-        return auxAnnotation;
-      }
-      return annotation;
-    });
-    const result = await updateAnnotation(auxAnnotationCurrent, user.id);
-    toastMessageLogin(result.data.status);
-
-    setUser(result.data.user);
-  }
-
-  function toastMessageLogin(message: string | AxiosError) {
-    const toastMessage: ToastMessageData = {
-      message: !(message instanceof AxiosError) ? message : message,
-      status: !(message instanceof AxiosError) ? "success" : "error",
-    };
-
-    toast[toastMessage.status](toastMessage.message, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  }
 }

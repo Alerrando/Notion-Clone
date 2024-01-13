@@ -34,8 +34,9 @@ export type AuthenticationDTO = {
 
 export type UserDTOProps = Omit<UserProps, "name" | "email" | "password">;
 
-export type TokenUser = {
-  user: UserProps;
+export type ResponseUser = {
+  annotation: AnnotationType[];
+  role: RoleProps;
 };
 
 export type EventLog = {

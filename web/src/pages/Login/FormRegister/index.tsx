@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { createRegister } from "../../../api";
 import { UserValueDefault, useAuth } from "../../../context";
-import { ToastMessageData, TokenUser, UserDTOProps, UserProps } from "../../../context/types";
+import { ToastMessageData, ResponseUser, UserDTOProps, UserProps } from "../../../context/types";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -141,16 +141,14 @@ export function FormRegister({ setPages }: FormRegisterProps) {
       ...rest,
     };
 
-    const responseRegister: TokenUser | AxiosError = await createRegister(infoUserValues);
+    const responseRegister: ResponseUser | AxiosError = await createRegister(infoUserValues);
     if (!(responseRegister instanceof AxiosError)) {
       const aux: UserDTOProps = {
         id: responseRegister.data.user.id,
         annotations: responseRegister.data.user.annotations,
         role: responseRegister.data.user.role,
       };
-
       setUser(aux);
-      localStorage.setItem("user-notion", aux.id);
 
       setTimeout(() => {
         navigate(`/editor/${aux.annotations[0].id}`);
@@ -161,7 +159,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   }
 }
 
-function toastMessage(message: TokenUser | AxiosError) {
+function toastMessage(message: ResponseUser | AxiosError) {
   const toastMessage: ToastMessageData = {
     message: !(message instanceof AxiosError)
       ? "Você foi cadastrado com sucesso, Você será redirecionado!"
