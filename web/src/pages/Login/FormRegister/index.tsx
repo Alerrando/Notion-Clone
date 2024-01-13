@@ -3,15 +3,17 @@ import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
 import { IoPersonOutline } from "react-icons/io5";
-import { MdPassword } from "react-icons/md";
+import { MdOutlineErrorOutline, MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { createRegister } from "../../../api";
 import { UserValueDefault, useAuth } from "../../../context";
 import { ToastMessageData, ResponseUser, UserDTOProps, UserProps } from "../../../context/types";
+import { FaCheck } from "react-icons/fa";
+import { styleToast } from "../../../util";
+import { Toaster, toast } from "sonner";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -130,7 +132,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
         </form>
       </section>
 
-      <ToastContainer />
+      <Toaster />
     </div>
   );
 
@@ -166,14 +168,12 @@ function toastMessage(message: ResponseUser | AxiosError) {
       : message.response?.data.message,
     status: !(message instanceof AxiosError) ? "success" : "error",
   };
-  toast[toastMessage.status](toastMessage.message, {
+  toast(toastMessage.message, {
+    type: toastMessage.status,
     position: "bottom-left",
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "light",
+    duration: 80000,
+    icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,
+    className: styleToast[toastMessage.status],
+    action: { label: "X", onClick: () => {} },
   });
 }

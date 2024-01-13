@@ -14,7 +14,6 @@ import { useParams } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
-import "./Editor.css";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);

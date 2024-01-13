@@ -4,15 +4,19 @@ import { lowlight } from "lowlight";
 import { BiCommentDetail } from "react-icons/bi";
 import { CgScreen } from "react-icons/cg";
 import { CiMenuKebab } from "react-icons/ci";
+import { FaCheck } from "react-icons/fa";
 import { IoIosStarOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
+import { MdOutlineErrorOutline } from "react-icons/md";
 import { SlSizeFullscreen } from "react-icons/sl";
 import { TbClockHour9 } from "react-icons/tb";
-import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import uuid from "react-uuid";
+import { Toaster, toast } from "sonner";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
+import { styleToast } from "../util";
 import { Editor } from "./Editor";
 
 type ModalAddContentProps = {
@@ -23,7 +27,8 @@ lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
 
 export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
-  const { user, setUser, updateUserAnnotation } = useAuth();
+  const { updateUserAnnotation } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -65,23 +70,22 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
         </div>
       </div>
 
-      <ToastContainer />
+      <Toaster />
     </>
   );
 
-  function addNewAnnotation() {
+  async function addNewAnnotation() {
     const newAnnotation = {
       id: uuid(),
       title: "Sem título",
-      content: ``,
+      content: "<h1></h1>",
       createdBy: new Date(),
       lastUpdate: new Date(),
     };
+    await updateUserAnnotation(newAnnotation, true, undefined);
 
-    const userAux = user;
-    userAux.annotations.push(newAnnotation);
-
-    setUser(userAux);
+    setAddPageModal(false);
+    navigate(`/editor/${newAnnotation.id}`);
   }
 
   async function addNewAnnotationFromEditor(getHTML: string | undefined) {
@@ -115,15 +119,13 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
       status: message ? "success" : "error",
     };
 
-    toast[toastMessage.status](toastMessage.message, {
+    toast(toastMessage.message, {
+      type: toastMessage.status,
       position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+      duration: 80000,
+      icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,
+      className: styleToast[toastMessage.status],
+      action: { label: "X", onClick: () => {} },
     });
   }
 }

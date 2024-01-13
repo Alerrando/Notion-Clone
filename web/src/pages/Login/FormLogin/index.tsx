@@ -3,15 +3,17 @@ import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
-import { MdPassword } from "react-icons/md";
+import { FaCheck } from "react-icons/fa";
+import { MdOutlineErrorOutline, MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster, toast } from "sonner";
 import { z } from "zod";
 import { getLogin } from "../../../api";
 import { useAuth } from "../../../context";
 import { ResponseUser, ToastMessageData, UserDTOProps } from "../../../context/types";
+import { styleToast } from "../../../util";
 
 const createFormSchema = z.object({
   email: z.string().email().nonempty("Digite seu email"),
@@ -150,7 +152,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
         </form>
       </section>
 
-      <ToastContainer />
+      <Toaster />
     </div>
   );
 
@@ -162,19 +164,16 @@ export function FormLogin({ setPages }: FormLoginProps) {
     const toastMessage: ToastMessageData = {
       message: !(message instanceof AxiosError)
         ? "Login feito com sucesso, Você será redirecionado!"
-        : message.response?.data.message,
+        : message.response?.data,
       status: !(message instanceof AxiosError) ? "success" : "error",
     };
-
-    toast[toastMessage.status](toastMessage.message, {
+    toast(toastMessage.message, {
+      type: toastMessage.status,
       position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+      duration: 80000,
+      icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,
+      className: styleToast[toastMessage.status],
+      action: { label: "X", onClick: () => {} },
     });
   }
 }
