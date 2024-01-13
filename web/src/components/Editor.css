@@ -1,9 +1,13 @@
-h1, h2, h3, h4, h5, p, ul, li, span, strong, code {
+.editor h1, .editor h2, .editor h3, .editor h4, .editor h5, .editor p, .editor ul, .editor li, .editor span, .editor strong, .editor code {
     color: black!important;
 }
 
 @media (prefers-color-scheme: dark){
-    h1, h2, h3, h4, h5, p, ul, li, span, strong, code {
-        color: white!important;
+    .editor h1, .editor h2, .editor h3, .editor h4, .editor h5, .editor p, .editor ul, .editor li, .editor span, .editor strong, .editor code {
+        color: #fff!important;
+    }
+
+    .editor.true h1, .editor.true h2, .editor.true h3, .editor.true h4, .editor.true h5, .editor.true p, .editor.true ul, .editor.true li, .editor.true span, .editor.true strong, .editor.true code {
+        color: #000!important;
     }
 }

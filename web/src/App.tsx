@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 import { ModalAddContent } from "./components/ModalAddContent";
 import { useAuth } from "./context";
+import { Toaster, toast } from "sonner";
+import { FaCheck } from "react-icons/fa";
+import { MdOutlineErrorOutline } from "react-icons/md";
+import { styleToast } from "./util";
 
 export function App() {
   const { user, verifyRoleUser, updateUserAnnotation, getDatasLocalStorage } = useAuth();
@@ -53,7 +55,7 @@ export function App() {
           </main>
         </div>
 
-        <ToastContainer />
+        <Toaster />
 
         {addPageModal && <ModalAddContent setAddPageModal={setAddPageModal} />}
       </div>
@@ -64,8 +66,8 @@ export function App() {
     setAddPageModal(!addPageModal);
   }
 
-  function handleSaveEditTask(getHTML: string | undefined, id: string) {
-    if (!getHTML) return;
+  function handleSaveEditTask(getHTML: string | undefined, id: string | undefined) {
+    if (!getHTML && !id) return;
 
     const currentContent = getHTML;
     const arrayCurrent = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
@@ -98,15 +100,13 @@ export function App() {
       status: message ? "success" : "error",
     };
 
-    toast[toastMessage.status](toastMessage.message, {
+    toast(toastMessage.message, {
+      type: toastMessage.status,
       position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+      duration: 80000,
+      icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,
+      className: styleToast[toastMessage.status],
+      action: { label: "X", onClick: () => {} },
     });
   }
 }

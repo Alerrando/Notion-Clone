@@ -8,12 +8,15 @@ import { IoIosStarOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
 import { SlSizeFullscreen } from "react-icons/sl";
 import { TbClockHour9 } from "react-icons/tb";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import uuid from "react-uuid";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
 import { Editor } from "./Editor";
+import { useNavigate } from "react-router";
+import { FaCheck } from "react-icons/fa";
+import { MdOutlineErrorOutline } from "react-icons/md";
+import { styleToast } from "../util";
+import { Toaster, toast } from "sonner";
 
 type ModalAddContentProps = {
   setAddPageModal: (addPageModal: boolean) => void;
@@ -23,7 +26,8 @@ lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
 
 export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
-  const { user, setUser, updateUserAnnotation } = useAuth();
+  const { updateUserAnnotation } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -65,7 +69,7 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
         </div>
       </div>
 
-      <ToastContainer />
+      <Toaster />
     </>
   );
 
@@ -73,19 +77,18 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
     const newAnnotation = {
       id: uuid(),
       title: "Sem título",
-      content: ``,
+      content: "<h1></h1>",
       createdBy: new Date(),
       lastUpdate: new Date(),
     };
+    updateUserAnnotation(newAnnotation, true, undefined);
 
-    const userAux = user;
-    userAux.annotations.push(newAnnotation);
-
-    setUser(userAux);
+    setAddPageModal(false);
+    navigate(`/editor/${newAnnotation.id}`);
   }
 
-  function addNewAnnotationFromEditor(getHTML: string | undefined) {
-    if (!getHTML) return;
+  function addNewAnnotationFromEditor(getHTML: string | undefined, id: string | undefined) {
+    if (!getHTML && !id) return;
     const currentContent = getHTML;
 
     const arrayCurrent: string[] | undefined = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
@@ -114,15 +117,13 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
       status: message ? "success" : "error",
     };
 
-    toast[toastMessage.status](toastMessage.message, {
+    toast(toastMessage.message, {
+      type: toastMessage.status,
       position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+      duration: 80000,
+      icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,
+      className: styleToast[toastMessage.status],
+      action: { label: "X", onClick: () => {} },
     });
   }
 }

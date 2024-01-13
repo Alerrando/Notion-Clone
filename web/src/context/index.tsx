@@ -77,7 +77,7 @@ export type ContextProps = {
     isNewAnnotation: boolean,
     annotationsAllUser?: AnnotationType[] | undefined,
   ) => void;
-  getDatasLocalStorage: () => string;
+  getDatasLocalStorage: () => string | undefined;
 };
 
 export const StoreContext = createContext<ContextProps>({} as ContextProps);
@@ -127,7 +127,7 @@ export function UseNotionContext({ children }: IPropsContext) {
     if (user?.id?.length === 0 || usersAll.length === 0) {
       const getUsersAll: UserProps[] = JSON.parse(localStorage.getItem("users-all-notion") as string);
       const idUser: string | undefined = localStorage.getItem("user-notion") as string;
-      const getUser = getUsersAll.find((user: UserProps) => user.id === idUser);
+      const getUser = getUsersAll?.find((user: UserProps) => user.id === idUser);
       if (getUsersAll && getUser) {
         setUsersAll(getUsersAll);
         setUser(getUser);

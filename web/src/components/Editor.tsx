@@ -14,7 +14,6 @@ import { useParams } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
-import "./Editor.css";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
@@ -32,7 +31,7 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
     user.annotations.find((annotation: AnnotationType) => annotation.id === id)?.content,
   );
   const toggleGroupItemClasses =
-    "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600 data-[active=true]:text-violet-400";
+    "p-2 text-zinc-200 text-sm flex items-center gap-1.5 font-medium leading-none hover:text-zinc-50 hover:bg-zinc-600";
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -67,7 +66,7 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
       <EditorContent
         editor={editor}
         className={twMerge(
-          "w-2/3 md:w-auto md:max-w-[65%] h-auto flex flex-col-reverse mx-auto md:mr-[25%] pt-8 md:pt-12 prose prose-invert text-black dark:text-white relative",
+          `w-2/3 md:w-auto md:max-w-[65%] h-auto flex flex-col-reverse mx-auto md:mr-[25%] pt-8 md:pt-12 prose prose-invert text-[#000!important] relative editor ${isNewContent}`,
           `${
             editor?.getText().length === 0
               ? "after:w-auto after:h-min after:content-['Sem_Titulo'] after:block after:text-zinc-600 after:text-4xl after:absolute after:bottom-[40%] after:z-0"
@@ -77,7 +76,7 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
       >
         <div className="w-full h-auto flex items-center justify-end">
           <button
-            className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 dark:text-white hover:text-white"
+            className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 hover:text-white"
             onClick={() => saveAnnotation(editor?.getHTML(), id)}
           >
             Salvar
@@ -106,7 +105,7 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
             </Popover.Trigger>
 
             <Popover.Portal>
-              <Popover.Content className="bg-zinc-700 md:bg-zinc-200 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-50">
+              <Popover.Content className="bg-zinc-700 md:bg-zinc-200 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-[65]">
                 <div className="group" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()}>
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
