@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public ResponseEntity findUser(AuthenticationDTO authenticationDTO) {
+    public ResponseEntity login(AuthenticationDTO authenticationDTO) {
         try {
             User user = (User) userRepository.findUser(authenticationDTO.getEmail());
             if(user.getEmail().equals(authenticationDTO.getEmail())){

@@ -23,9 +23,10 @@ public class UserController {
         return userService.findAll();
     }
 
-    @PostMapping("/find")
-    public ResponseEntity findUser(@RequestBody @Valid AuthenticationDTO authenticationDTO){
-        return userService.findUser(authenticationDTO);
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody @Valid AuthenticationDTO authenticationDTO){
+        return userService.login(authenticationDTO);
+
     }
 
     @PostMapping
