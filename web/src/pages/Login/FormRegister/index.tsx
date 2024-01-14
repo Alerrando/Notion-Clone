@@ -130,7 +130,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
         </form>
       </section>
 
-      <Toaster />
+      <Toaster position="bottom-left" />
     </div>
   );
 
@@ -174,7 +174,6 @@ function toastMessage(message: string | undefined) {
     status: !message ? "success" : "error",
   };
   toast(toastMessage.message, {
-    type: toastMessage.status,
     position: "bottom-left",
     duration: 80000,
     icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,

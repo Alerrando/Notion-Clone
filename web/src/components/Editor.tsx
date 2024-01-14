@@ -22,9 +22,10 @@ lowlight.registerLanguage("js", js);
 type EditorProps = {
   isNewContent: boolean;
   saveAnnotation: (getHtml: string | undefined, id?: string) => void;
+  setContentCurrent?: (contentCurrent: string) => void;
 };
 
-export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
+export function Editor({ isNewContent, saveAnnotation, setContentCurrent }: EditorProps) {
   const { user } = useAuth();
   const { id } = useParams();
   const [currentEditor, setCurrentEditor] = useState<string | undefined>(
@@ -44,6 +45,11 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
       attributes: {
         class: "h-full outline-none z-10",
       },
+    },
+    onUpdate: () => {
+      if (editor?.getHTML() && setContentCurrent) {
+        setContentCurrent(editor?.getHTML());
+      }
     },
   });
 

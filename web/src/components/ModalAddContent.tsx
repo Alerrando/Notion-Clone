@@ -1,22 +1,23 @@
 import js from "highlight.js/lib/languages/javascript";
 import html from "highlight.js/lib/languages/xml";
 import { lowlight } from "lowlight";
+import { useState } from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { CgScreen } from "react-icons/cg";
 import { CiMenuKebab } from "react-icons/ci";
+import { FaCheck } from "react-icons/fa";
 import { IoIosStarOutline } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
+import { MdOutlineErrorOutline } from "react-icons/md";
 import { SlSizeFullscreen } from "react-icons/sl";
 import { TbClockHour9 } from "react-icons/tb";
+import { useNavigate } from "react-router";
 import uuid from "react-uuid";
+import { Toaster, toast } from "sonner";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
-import { Editor } from "./Editor";
-import { useNavigate } from "react-router";
-import { FaCheck } from "react-icons/fa";
-import { MdOutlineErrorOutline } from "react-icons/md";
 import { styleToast } from "../util";
-import { Toaster, toast } from "sonner";
+import { Editor } from "./Editor";
 
 type ModalAddContentProps = {
   setAddPageModal: (addPageModal: boolean) => void;
@@ -27,6 +28,7 @@ lowlight.registerLanguage("js", js);
 
 export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
   const { updateUserAnnotation } = useAuth();
+  const [contentCurrent, setContentCurrent] = useState<string>("");
   const navigate = useNavigate();
 
   return (
@@ -64,23 +66,29 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
           </header>
 
           <section className="w-full h-[85%] overflow-y-auto">
-            <Editor isNewContent={true} saveAnnotation={addNewAnnotationFromEditor} />
+            <Editor
+              isNewContent={true}
+              saveAnnotation={addNewAnnotationFromEditor}
+              setContentCurrent={setContentCurrent}
+            />
           </section>
         </div>
       </div>
 
-      <Toaster />
+      <Toaster position="bottom-left" />
     </>
   );
 
   function addNewAnnotation() {
+    const arrayCurrent = contentCurrent.split(/<(\/?\w+)>/).filter(Boolean);
     const newAnnotation = {
       id: uuid(),
-      title: "Sem título",
-      content: "<h1></h1>",
+      title: arrayCurrent[1],
+      content: contentCurrent,
       createdBy: new Date(),
       lastUpdate: new Date(),
     };
+    console.log(contentCurrent);
     updateUserAnnotation(newAnnotation, true, undefined);
 
     setAddPageModal(false);
@@ -89,9 +97,9 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
 
   function addNewAnnotationFromEditor(getHTML: string | undefined, id: string | undefined) {
     if (!getHTML && !id) return;
-    const currentContent = getHTML;
 
-    const arrayCurrent: string[] | undefined = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
+    const currentContent = getHTML as string;
+    const arrayCurrent: string[] = currentContent.split(/<(\/?\w+)>/).filter(Boolean);
 
     if (currentContent && arrayCurrent) {
       const newAnnotation: AnnotationType = {
@@ -118,7 +126,6 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
     };
 
     toast(toastMessage.message, {
-      type: toastMessage.status,
       position: "bottom-left",
       duration: 80000,
       icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,

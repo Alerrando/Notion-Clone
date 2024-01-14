@@ -12,8 +12,8 @@ export function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const annotationId: string = getDatasLocalStorage();
-    if (annotationId.length > 0) {
+    const annotationId: string | undefined = getDatasLocalStorage();
+    if (annotationId.length > 0 && annotationId) {
       navigate(`/editor/${annotationId}`);
     } else {
       navigate("/");

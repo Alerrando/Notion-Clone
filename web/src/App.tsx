@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import { FaCheck } from "react-icons/fa";
+import { MdOutlineErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { Toaster, toast } from "sonner";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 import { ModalAddContent } from "./components/ModalAddContent";
 import { useAuth } from "./context";
-import { Toaster, toast } from "sonner";
-import { FaCheck } from "react-icons/fa";
-import { MdOutlineErrorOutline } from "react-icons/md";
 import { styleToast } from "./util";
 
 export function App() {
@@ -17,8 +17,8 @@ export function App() {
 
   useEffect(() => {
     if (user.id.length === 0) {
-      const annotationId: string = getDatasLocalStorage();
-      if (annotationId.length > 0) {
+      const annotationId: string | undefined = getDatasLocalStorage();
+      if (annotationId.length > 0 && annotationId) {
         navigate(`/editor/${annotationId}`);
       } else {
         navigate("/");
@@ -30,6 +30,7 @@ export function App() {
     }, 5000);
 
     verifyRoleUser && verifyRoleUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!loading && user.id.length === 0) {
@@ -55,7 +56,7 @@ export function App() {
           </main>
         </div>
 
-        <Toaster />
+        <Toaster position="bottom-left" />
 
         {addPageModal && <ModalAddContent setAddPageModal={setAddPageModal} />}
       </div>
@@ -69,15 +70,15 @@ export function App() {
   function handleSaveEditTask(getHTML: string | undefined, id: string | undefined) {
     if (!getHTML && !id) return;
 
-    const currentContent = getHTML;
-    const arrayCurrent = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
+    const currentContent = getHTML as string;
+    const arrayCurrent: string[] = currentContent.split(/<(\/?\w+)>/).filter(Boolean);
 
     const auxAnnotationCurrent = user.annotations.map((annotation) =>
       annotation.id === id && arrayCurrent
         ? {
             ...annotation,
             title: arrayCurrent[1],
-            content: currentContent,
+            content: currentContent as string,
             lastUpdate: new Date(),
           }
         : annotation,
@@ -101,7 +102,6 @@ export function App() {
     };
 
     toast(toastMessage.message, {
-      type: toastMessage.status,
       position: "bottom-left",
       duration: 80000,
       icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,

@@ -122,7 +122,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
         </form>
       </section>
 
-      <Toaster />
+      <Toaster position="bottom-left" />
     </div>
   );
 
@@ -153,7 +153,6 @@ export function FormLogin({ setPages }: FormLoginProps) {
     };
 
     toast(toastMessage.message, {
-      type: toastMessage.status,
       position: "bottom-left",
       duration: 80000,
       icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,
