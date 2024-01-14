@@ -135,7 +135,7 @@ export function Editor({ isNewContent, saveAnnotation, setContentCurrent }: Edit
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
                       src="https://www.notion.so/images/blocks/header.57a7576a.png"
-                      alt="Heading"
+                      alt="Heading 1"
                       className="w-12 border border-zinc-600 rounded"
                     />
 
@@ -152,7 +152,7 @@ export function Editor({ isNewContent, saveAnnotation, setContentCurrent }: Edit
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
                       src="https://www.notion.so/images/blocks/subheader.9aab4769.png"
-                      alt="Heading"
+                      alt="Heading 2"
                       className="w-12 border border-zinc-600 rounded"
                     />
 
@@ -169,7 +169,7 @@ export function Editor({ isNewContent, saveAnnotation, setContentCurrent }: Edit
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
                       src="https://www.notion.so/images/blocks/subsubheader.d0ed0bb3.png"
-                      alt="Heading"
+                      alt="Heading 3"
                       className="w-12 border border-zinc-600 rounded"
                     />
 

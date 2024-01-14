@@ -2,7 +2,6 @@ import { Key } from "react";
 import { Texts } from "./Texts";
 
 type TextsInputProps = {
-  className: string;
   text: string;
 };
 
