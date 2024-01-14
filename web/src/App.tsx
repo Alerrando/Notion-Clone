@@ -18,7 +18,7 @@ export function App() {
   useEffect(() => {
     if (user.id.length === 0) {
       const annotationId: string | undefined = getDatasLocalStorage();
-      if (annotationId.length > 0 && annotationId) {
+      if (annotationId && annotationId?.length > 0) {
         navigate(`/editor/${annotationId}`);
       } else {
         navigate("/");

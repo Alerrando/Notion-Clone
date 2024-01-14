@@ -111,7 +111,7 @@ export function Editor({ isNewContent, saveAnnotation, setContentCurrent }: Edit
             </Popover.Trigger>
 
             <Popover.Portal>
-              <Popover.Content className="bg-zinc-700 md:bg-zinc-200 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-[65]">
+              <Popover.Content className="bg-zinc-700 md:bg-zinc-200 md:dark:bg-zinc-700/5 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 md:dark:border-zinc-700/md:dark:bg-zinc-700/5 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-[65]">
                 <div className="group" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()}>
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
@@ -121,23 +121,13 @@ export function Editor({ isNewContent, saveAnnotation, setContentCurrent }: Edit
                     />
 
                     <FloatingMenuShow.TextInput
-                      texts={[
-                        {
-                          className: "text-sm text-zinc-50",
-                          text: "Text",
-                        },
-
-                        {
-                          className: "text-xs text-zinc-400",
-                          text: "Just start writing with plain text.",
-                        },
-                      ]}
+                      texts={[{ text: "Text" }, { text: "Just start writing with plain text." }]}
                     />
                   </FloatingMenuShow.Root>
                 </div>
 
                 <div
-                  className=""
+                  className="group"
                   onClick={() => {
                     editor.chain().focus().toggleHeading({ level: 1 }).run();
                   }}
@@ -149,19 +139,41 @@ export function Editor({ isNewContent, saveAnnotation, setContentCurrent }: Edit
                       className="w-12 border border-zinc-600 rounded"
                     />
 
-                    <FloatingMenuShow.TextInput
-                      texts={[
-                        {
-                          className: "text-sm text-zinc-50",
-                          text: "Heading 1",
-                        },
+                    <FloatingMenuShow.TextInput texts={[{ text: "Heading 1" }, { text: "Big section heading." }]} />
+                  </FloatingMenuShow.Root>
+                </div>
 
-                        {
-                          className: "text-xs text-zinc-400",
-                          text: "Big section heading.",
-                        },
-                      ]}
+                <div
+                  className="group"
+                  onClick={() => {
+                    editor.chain().focus().toggleHeading({ level: 2 }).run();
+                  }}
+                >
+                  <FloatingMenuShow.Root>
+                    <FloatingMenuShow.Img
+                      src="https://www.notion.so/images/blocks/subheader.9aab4769.png"
+                      alt="Heading"
+                      className="w-12 border border-zinc-600 rounded"
                     />
+
+                    <FloatingMenuShow.TextInput texts={[{ text: "Heading 2" }, { text: "Medium section heading." }]} />
+                  </FloatingMenuShow.Root>
+                </div>
+
+                <div
+                  className="group"
+                  onClick={() => {
+                    editor.chain().focus().toggleHeading({ level: 3 }).run();
+                  }}
+                >
+                  <FloatingMenuShow.Root>
+                    <FloatingMenuShow.Img
+                      src="https://www.notion.so/images/blocks/subsubheader.d0ed0bb3.png"
+                      alt="Heading"
+                      className="w-12 border border-zinc-600 rounded"
+                    />
+
+                    <FloatingMenuShow.TextInput texts={[{ text: "Heading 3" }, { text: "Low section heading." }]} />
                   </FloatingMenuShow.Root>
                 </div>
               </Popover.Content>

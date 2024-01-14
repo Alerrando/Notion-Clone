@@ -29,7 +29,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
   const { user } = useAuth();
   const [menu, setMenu] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isFixed, setIsFixed] = useState<boolean>(false);
+  const [isFixed, setIsFixed] = useState<boolean>(true);
   const navigate = useNavigate();
 
   const menuList: MenuListType[] = [

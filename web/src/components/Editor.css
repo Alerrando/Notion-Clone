@@ -3,7 +3,7 @@
 }
 
 @media (prefers-color-scheme: dark){
-    .editor h1, .editor h2, .editor h3, .editor h4, .editor h5, .editor p, .editor ul, .editor li, .editor span, .editor strong, .editor code {
+    .editor.false h1, .editor.false h2, .editor.false h3, .editor.false h4, .editor.false h5, .editor.false p, .editor.false ul, .editor.false li, .editor.false span, .editor.false strong, .editor.false code {
         color: #fff!important;
     }
 
