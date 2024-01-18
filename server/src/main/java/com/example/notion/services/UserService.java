@@ -1,6 +1,7 @@
 package com.example.notion.services;
 
 import com.example.notion.entities.*;
+import com.example.notion.exception.UserNotFoundException;
 import com.example.notion.repositorys.UserRepository;
 import com.example.notion.util.Util;
 import jakarta.servlet.http.Cookie;
@@ -15,13 +16,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
 
 @Service
-@Validated
-public class UserService implements UserDetailsService {
+public class UserService {
     @Autowired
     private HttpServletResponse response;
 
@@ -45,26 +44,21 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    public ResponseEntity findUser(AuthenticationDTO authenticationDTO) {
-        try {
-            User user = (User) userRepository.findUser(authenticationDTO.getEmail());
-            if(user != null && user.getEmail().equals(authenticationDTO.getEmail())){
-                AuthenticationDTO auxAuthenticationDTO = new AuthenticationDTO(user.getEmail(), user.getPassword());
-                tokenService.generateToken(auxAuthenticationDTO);
-
-                EventLog eventLog = new EventLog(0, user, new Date(),"Login", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
-                eventLogService.create(eventLog);
-                this.addIdUserCookie(user.getId());
-                UserDTO userDTO = new UserDTO(user.getAnnotations(), user.getRole());
-
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body(userDTO);
-            }
-
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+    public ResponseEntity findUser(AuthenticationDTO authenticationDTO) throws UserNotFoundException {
+        User user = (User) userRepository.findUser(authenticationDTO.getEmail());
+        if(user == null){
+            throw new UserNotFoundException();
         }
+
+        AuthenticationDTO auxAuthenticationDTO = new AuthenticationDTO(user.getEmail(), user.getPassword());
+        tokenService.generateToken(auxAuthenticationDTO);
+
+        EventLog eventLog = new EventLog(0, user, new Date(),"Login", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
+        eventLogService.create(eventLog);
+        this.addIdUserCookie(user.getId());
+        UserDTO userDTO = new UserDTO(user.getAnnotations(), user.getRole());
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userDTO);
     }
 
     public ResponseEntity create(@Valid User user){
@@ -88,14 +82,13 @@ public class UserService implements UserDetailsService {
                 return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
             }
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário Já Cadastrado");
+            throw new UserNotFoundException();
         }
         catch (RuntimeException runtimeException){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
         }
     }
 
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findUser(username);
     }

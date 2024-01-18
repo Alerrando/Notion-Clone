@@ -15,8 +15,6 @@ import java.util.Optional;
 public class EventLogService {
     @Autowired
     private EventLogRepository eventLogRepository;
-    @Autowired
-    private UserRepository userRepository;
 
     public List<EventLog> findAll(){
         return eventLogRepository.findAll();
@@ -27,7 +25,6 @@ public class EventLogService {
     }
 
     public EventLog create(EventLog eventLog){
-        Optional<User> user = userRepository.findById(eventLog.getId());
         eventLog.setTimestamp(new Date());
 
         return eventLogRepository.save(eventLog);

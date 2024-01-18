@@ -3,6 +3,7 @@ package com.example.notion.services;
 import com.example.notion.entities.Annotation;
 import com.example.notion.entities.User;
 import com.example.notion.entities.UserDTO;
+import com.example.notion.exception.UserNotFoundException;
 import com.example.notion.repositorys.UserRepository;
 import com.example.notion.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,12 @@ public class AnnotationService {
     @Autowired
     Util util;
 
-    public ResponseEntity create(Annotation annotation){
-        try {
+    public void create(Annotation annotation){
             Optional<User> user = userRepository.findById(util.getIdUserCookie());
             Map<String, Object> response = new HashMap<>();
 
             if(user.isEmpty()){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
+                throw new UserNotFoundException();
             }
 
             user.get().getAnnotations().add(annotation);
@@ -37,11 +37,7 @@ public class AnnotationService {
             response.put("user", userDTO);
             response.put("status", "Página adicionada com sucesso!");
 
-            userRepository.save((User) user.get());
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
-        } catch (RuntimeException runtimeException){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
-        }
+            userRepository.save(user.get());
     }
 
     public ResponseEntity update(List<Annotation> annotations){
@@ -52,12 +48,13 @@ public class AnnotationService {
             if(user.isEmpty()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário não encontrado!");
             }
+
             user.get().setAnnotations(annotations);
             UserDTO userDTO = new UserDTO(user.get().getAnnotations(), user.get().getRole());
             response.put("user", userDTO);
             response.put("status", "Página atualizada com sucesso!");
-
             userRepository.save(user.get());
+
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         } catch (RuntimeException runtimeException){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
