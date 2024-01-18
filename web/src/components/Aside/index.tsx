@@ -86,7 +86,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
         <div
           className={`hidden md:w-64 md:h-fit md:flex flex-col justify-between bg-zinc-100 dark:bg-[#2e2e2f] transition-all duration-500 md:absolute md:top-[8%] md:-left-full aside-menu ${menu} isfixed-${isFixed}`}
         >
-          <div className="w-auto h-auto flex flex-col gap-12 py-6 overflow-x-hidden">
+          <div className="w-3/4 md:w-auto h-auto flex flex-col gap-12 py-6 overflow-x-hidden bg-zinc-900 md:bg-transparent">
             {loading ? (
               <SkeletonAside menuList={menuList} />
             ) : (

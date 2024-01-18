@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
+import "./Editor.css";
 import { FloatingMenuShow } from "./FloatingMenuShow";
 
 lowlight.registerLanguage("html", html);
@@ -66,17 +67,20 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
       <EditorContent
         editor={editor}
         className={twMerge(
-          "w-2/3 md:w-auto md:max-w-[65%] h-auto flex flex-col-reverse mx-auto md:mr-[25%] pt-8 md:pt-12 prose prose-invert text-black dark:text-white relative",
+          `w-full md:w-auto md:max-w-[65%] h-auto flex flex-col-reverse mx-auto  pt-8 md:pt-12 prose prose-invert relative editor`,
           `${
             editor?.getText().length === 0
               ? "after:w-auto after:h-min after:content-['Sem_Titulo'] after:block after:text-zinc-600 after:text-4xl after:absolute after:bottom-[40%] after:z-0"
               : ""
-          }`,
+          }
+          ${isNewContent && "md: md:max-w-[92%] m-[0_auto!important]"}
+          md:mr-[25%]
+          `,
         )}
       >
         <div className="w-full h-auto flex items-center justify-end">
           <button
-            className="px-8 py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 dark:text-white hover:text-white"
+            className="px-6 md:px-8 py-1 md:py-2 border border-green-600 rounded-lg hover:bg-green-600 text-green-600 hover:text-white"
             onClick={() => saveAnnotation(editor?.getHTML(), id)}
           >
             Salvar

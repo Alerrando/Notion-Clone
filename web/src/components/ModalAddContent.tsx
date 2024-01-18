@@ -33,34 +33,34 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
   return (
     <>
       <div className="w-screen h-screen flex items-center justify-center inset-0 fixed bg-modal z-[60]">
-        <div className="w-[55%] h-[calc(100%_-_144px)] bg-white rounded-lg">
-          <header className="w-full h-auto py-3 px-4 flex items-center justify-between border-b-2 border-b-[#eee]">
+        <div className="w-auto md:w-[65%] h-[calc(100%_-_144px)] bg-white rounded-lg">
+          <header className="w-full h-auto py-2 md:py-2 px-3 md:px-4 flex items-center justify-between border-b-2 border-b-[#eee]">
             <div className="">
-              <div className="flex flex-row gap-1 items-center text-black">
+              <div className="flex flex-row gap-2 md:gap-1 items-center text-black">
                 <IoClose
-                  className="w-10 h-10 p-2 cursor-pointer hover:bg-zinc-200 rounded-md"
+                  className="w-[32px] h-[32px] md:w-8 md:h-8 p-1 cursor-pointer hover:bg-zinc-200 rounded-md"
                   onClick={() => setAddPageModal(false)}
                 />
                 <SlSizeFullscreen
-                  className="w-8 h-8 p-2 cursor-pointer hover:bg-zinc-200 rounded-md"
+                  className="w-[22px] h-[22px] md:w-8 md:h-8 p-1 md:p-2 cursor-pointer hover:bg-zinc-200 rounded-md"
                   onClick={() => addNewAnnotation()}
                 />
-                <CgScreen className="w-9 h-9 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
+                <CgScreen className="w-[32px] h-[32px] md:w-9 md:h-9 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
               </div>
             </div>
 
-            <div className="w-auto flex flex-row items-center gap-1 text-black">
-              <span className="text-[#000!important] text-base px-2 py-1 cursor-pointer hover:bg-zinc-200 rounded-md">
-                Compartilhar
-              </span>
+            <span className="text-[#000!important] text-base px-2 py-1 cursor-pointer hover:bg-zinc-200 rounded-md">
+              Compartilhar
+            </span>
 
-              <BiCommentDetail className="w-9 h-9 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
+            <div className="w-auto flex flex-row items-center gap-2 md:gap-1 text-black">
+              <BiCommentDetail className="w-7 h-7 md:w-9 md:h-9 p-1 md:p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
 
-              <TbClockHour9 className="w-9 h-9 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
+              <TbClockHour9 className="w-7 h-7 md:w-9 md:h-9 p-1 md:p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
 
-              <IoIosStarOutline className="w-9 h-9 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
+              <IoIosStarOutline className="w-7 h-7 md:w-9 md:h-9 p-1 md:p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
 
-              <CiMenuKebab className="w-9 h-9 p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
+              <CiMenuKebab className="w-7 h-7 md:w-9 md:h-9 p-1 md:p-2 cursor-pointer hover:bg-zinc-200 rounded-md" />
             </div>
           </header>
 
@@ -70,7 +70,7 @@ export function ModalAddContent({ setAddPageModal }: ModalAddContentProps) {
         </div>
       </div>
 
-      <Toaster />
+      <Toaster position="bottom-left" />
     </>
   );
 
