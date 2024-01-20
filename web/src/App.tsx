@@ -7,10 +7,12 @@ import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 import { ModalAddContent } from "./components/ModalAddContent";
 import { useAuth } from "./context";
+import { UserProps } from "./context/types";
 import { styleToast } from "./util";
 
 export function App() {
-  const { user, verifyRoleUser, updateUserAnnotation, getDatasLocalStorage } = useAuth();
+  const { user, usersAll, verifyRoleUser, updateUserAnnotation, getDatasLocalStorage, createEventLogRegister } =
+    useAuth();
   const [addPageModal, setAddPageModal] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -91,6 +93,12 @@ export function App() {
     toastMessage(contentChanged);
 
     if (contentChanged) {
+      const aux: UserProps = usersAll.find((userCreate: UserProps) => userCreate.id === user.id) as UserProps;
+      createEventLogRegister(
+        aux,
+        `Editou a página ${user.annotations.find((annotation) => annotation.id === id)?.title}`,
+        `Página ${user.annotations.find((annotation) => annotation.id === id)?.title} foi editada`,
+      );
       updateUserAnnotation(undefined, false, auxAnnotationCurrent);
     }
   }
@@ -102,8 +110,7 @@ export function App() {
     };
 
     toast(toastMessage.message, {
-      position: "bottom-left",
-      duration: 80000,
+      duration: 5000,
       icon: toastMessage.status === "success" ? <FaCheck size={18} /> : <MdOutlineErrorOutline size={18} />,
       className: styleToast[toastMessage.status],
       action: { label: "X", onClick: () => {} },
