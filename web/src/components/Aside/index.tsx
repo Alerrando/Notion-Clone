@@ -12,6 +12,7 @@ import { MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context";
 import { AnnotationType } from "../../context/types";
+import { ArchiveHistoryModal } from "../Aside/ArchiveHistoryModal";
 import { AsideMenu } from "./AsideMenu";
 import { SkeletonAside } from "./SkeletonAside";
 
@@ -30,6 +31,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
   const [menu, setMenu] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFixed, setIsFixed] = useState<boolean>(true);
+  const [archiveHistory, setArchiveHistory] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const menuList: MenuListType[] = [
@@ -42,7 +44,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
     {
       name: "Mundaças Recentes",
       icon: BiTime,
-      openMenuList: () => {},
+      openMenuList: () => setArchiveHistory(!archiveHistory),
     },
 
     {
@@ -68,8 +70,12 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
 
   return (
     <>
-      <div className="w-full h-full group container-aside relative">
-        <div className="h-min w-full items-center justify-start bg-zinc-100 dark:bg-[#2e2e2f] hidden md:flex">
+      <div
+        className={`w-full h-full group container-aside relative ${
+          isFixed && "md:bg-zinc-200 dark:bg-[#2e2e2f] shadow-lg"
+        }`}
+      >
+        <div className="h-min w-full items-center justify-start hidden md:flex">
           <FiMenu className="w-10 h-10 text-black dark:text-white p-2 cursor-pointer group-hover:hidden" />
 
           <FaAnglesRight
@@ -84,16 +90,18 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
         />
 
         <div
-          className={`hidden md:w-64 md:h-fit md:flex flex-col justify-between bg-zinc-100 dark:bg-[#2e2e2f] transition-all duration-500 md:absolute md:top-[8%] md:-left-full aside-menu ${menu} isfixed-${isFixed}`}
+          className={`hidden md:w-64 md:h-fit md:flex flex-col justify-between transition-all duration-500 md:absolute md:top-[8%] md:-left-full aside-menu ${
+            menu && "true"
+          } ${isFixed && "h-full md:w-64 md:top-0 md:left-0"}`}
         >
-          <div className="w-auto h-auto flex flex-col gap-12 py-6 overflow-x-hidden">
+          <div className="w-[65%] h-full md:w-auto flex flex-col gap-12 py-6 overflow-x-hidden bg-zinc-800 md:bg-transparent">
             {loading ? (
               <SkeletonAside menuList={menuList} />
             ) : (
               <>
                 <div className="w-[95%] h-auto flex flex-row gap-4 items-center justify-between px-4">
                   <div className="rounded-full cursor-pointer min-w-[2rem] min-h-[2rem] max-w-[2rem] max-h-[2rem]">
-                    <FaUserCircle className="w-full h-full" />
+                    <FaUserCircle className="w-full h-full text-white md:text-[#2e2e2f] dark:text-zinc-200" />
                   </div>
 
                   <div className="w-min gap-2 linux-box hidden md:flex items-end">
@@ -103,7 +111,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
                   </div>
 
                   <MdClose
-                    className="w-12 h-12 text-black p-2 cursor-pointer block md:hidden close-menu-svg-desktop"
+                    className="w-12 h-12 text-white md:text-[#2e2e2f] dark:text-zinc-200 p-2 cursor-pointer block md:hidden close-menu-svg-desktop"
                     onClick={() => setMenu(!menu)}
                   />
                 </div>
@@ -114,18 +122,19 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
                   {user?.annotations !== undefined &&
                     user?.annotations?.map((contextUser: AnnotationType, index: Key) => (
                       <li
-                        className="flex flex-row items-center hover:bg-zinc-200 dark:hover:bg-zinc-600 justify-start gap-1 py-0.5 px-1 rounded-md cursor-pointer"
+                        className="flex flex-row items-center hover:bg-zinc-400 dark:hover:bg-zinc-600 justify-start gap-1 py-0.5 px-1 rounded-md cursor-pointer text-white hover:text-black md:text-[#2e2e2f] dark:text-zinc-200"
                         key={index}
                         onClick={() => changingAnnotationCurrent(contextUser)}
                       >
                         <GoChevronRight size={16} />
                         <div className="flex flex-row items-center justify-start gap-1">
-                          <IoDocumentTextOutline size={18} className="dark:text-zinc-300 text-zinc-600" />
+                          <IoDocumentTextOutline size={18} />
                           <span className="text-sm font-semibold">{contextUser?.title}</span>
                         </div>
                       </li>
                     ))}
                 </ul>
+                <div className=""></div>
 
                 <FaAnglesLeft
                   className="w-6 h-6 fixed left-4 bottom-[5%] cursor-pointer close-aside-menu"
@@ -135,6 +144,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
             )}
           </div>
         </div>
+        {archiveHistory && <ArchiveHistoryModal />}
       </div>
     </>
   );
@@ -142,5 +152,8 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
   function changingAnnotationCurrent(contextUser: AnnotationType) {
     localStorage.setItem("annotation-current", contextUser.id);
     navigate(`/editor/${contextUser.id}`);
+    if (window.innerWidth <= 763) {
+      setIsFixed(true);
+    }
   }
 }

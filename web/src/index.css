@@ -2,85 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-body, main{
-    background-color: #f5f5f5;
+body,
+main {
+  background-color: #f5f5f5;
 }
 
 @keyframes slideToLeft {
-    0% {
-        transform: translateX(100%);
-    }
-    100% {
-        transform: translateX(0);
-    }
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideToRight {
-    0% {
-        transform: translateX(-100%);
-    }
+  0% {
+    transform: translateX(-100%);
+  }
 
-    100% {
-        transform: translateX(0);
-    }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .slide-left {
-    animation: slideToLeft 0.6s ease-in-out;
+  animation: slideToLeft 0.6s ease-in-out;
 }
 
 .slide-right {
-    animation: slideToRight 0.6s ease-in-out;
+  animation: slideToRight 0.6s ease-in-out;
 }
 
-.aside-menu.true{
-    background-color: rgba(0, 0, 0, 0.3);
-    display: flex;
-    height: 100vh;
-    position: fixed;
-    top: 0;
+.aside-menu.true {
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+}
+
+.container-aside:hover .aside-menu {
+  left: 0;
+}
+
+.container-aside .linux-box:hover button:nth-child(1) {
+  background-color: rgb(248 113 113);
+}
+
+.container-aside .linux-box:hover button:nth-child(2) {
+  background-color: rgb(250 204 21);
+}
+
+.container-aside .linux-box:hover button:nth-child(3) {
+  background-color: rgb(74 222 128);
+}
+
+.aside-menu .close-aside-menu {
+  display: none;
+}
+
+.success-toast,
+.error-toast,
+.success-toast > button,
+.error-toast > button {
+  color: #fff !important;
+}
+
+.success-toast {
+  background-color: #16a34a !important;
+  border: #16a34a;
+}
+
+.success-toast > button {
+  background-color: #136d34 !important;
+}
+
+.error-toast {
+  background-color: #dc2626 !important;
+  border: #dc2626;
+}
+
+.error-toast > button {
+  background-color: #791f1f !important;
+}
+
+@media (max-width: 763px) {
+  .aside-menu.true {
+    background-color: rgba(0, 0, 0, 0.5);
+    inset: 0;
+    position: absolute;
     width: 100vw;
-}
-
-.container-aside:hover .aside-menu{
-    left: 0;
-}
-
-.container-aside .linux-box:hover button:nth-child(1){
-    background-color:  rgb(248 113 113);
-}
-
-.container-aside .linux-box:hover button:nth-child(2){
-    background-color:  rgb(250 204 21);
-}
-
-.container-aside .linux-box:hover button:nth-child(3){
-    background-color:  rgb(74 222 128);
-}
-
-.aside-menu .close-aside-menu{
-    display: none;
+  }
 }
 
 @media (min-width: 764px) {
-    .container-aside:hover .menu-svg-desktop, .container-aside:hover .close-menu-svg-desktop{
-        visibility: hidden;
-    }
+  .container-aside:hover .menu-svg-desktop,
+  .container-aside:hover .close-menu-svg-desktop {
+    visibility: hidden;
+  }
 
-    .aside-menu.isfixed-true{
-        background-color: rgb(39 39 42);
-        height: -webkit-fill-available;
-        top: 0;
-        left: 0;
-    }
+  .aside-menu.isfixed-true {
+    background-color: rgb(39 39 42);
+    height: -webkit-fill-available;
+    top: 0;
+    left: 0;
+  }
 
-    .aside-menu.aside-menu.isfixed-true .close-aside-menu{
-        display: block;
-    }
+  .aside-menu.aside-menu.isfixed-true .close-aside-menu {
+    display: block;
+  }
 }
 
-@media (prefers-color-scheme: dark){
-    body{
-        background-color: rgb(39 39 42);
-    }
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: rgb(39 39 42);
+  }
 }
