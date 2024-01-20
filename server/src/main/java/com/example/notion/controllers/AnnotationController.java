@@ -23,7 +23,7 @@ public class AnnotationController {
     };
 
     @PutMapping
-    public ResponseEntity update(@RequestBody List<Annotation> annotations){
-        return annotationService.update(annotations);
+    public ResponseEntity update(@RequestBody List<Annotation> annotations, @RequestBody String title){
+        return annotationService.update(annotations, title);
     }
 }
