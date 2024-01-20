@@ -55,8 +55,10 @@ public class SecurityFilter extends OncePerRequestFilter  {
                     String token = cookie.getValue();
                     var subject = tokenService.validateToken(token);
                     UserDetails user = userRepository.findUser(subject);
-                    var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if(user != null){
+                        var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             }
         }

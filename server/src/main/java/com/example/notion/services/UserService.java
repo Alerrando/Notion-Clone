@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -44,10 +45,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public ResponseEntity findUser(AuthenticationDTO authenticationDTO) throws UserNotFoundException {
+    public ResponseEntity login(AuthenticationDTO authenticationDTO) throws UserNotFoundException {
         User user = (User) userRepository.findUser(authenticationDTO.getEmail());
+
         if(user == null){
-            throw new UserNotFoundException();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UserNotFoundException().getMessage());
         }
 
         AuthenticationDTO auxAuthenticationDTO = new AuthenticationDTO(user.getEmail(), user.getPassword());
@@ -62,31 +64,25 @@ public class UserService {
     }
 
     public ResponseEntity create(@Valid User user){
-        try {
             User optional = (User) userRepository.findUser(user.getEmail());
-            if(optional == null || optional.equals(user)){
-                String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
-                user.setPassword(encryptedPassword);
-                user.setId(UUID.randomUUID().toString());
-
-                AuthenticationDTO authenticationDTO = new AuthenticationDTO(user.getEmail(), user.getPassword());
-                tokenService.generateToken(authenticationDTO);
-
-                userRepository.save(user);
-                this.addIdUserCookie(user.getId());
-
-                EventLog eventLog = new EventLog(0, user, new Date(),"Registro", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
-                eventLogService.create(eventLog);
-                UserDTO userDTO = new UserDTO(user.getAnnotations(), user.getRole());
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+            if(optional != null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UserNotFoundException().getMessage());
             }
+            String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+            user.setPassword(encryptedPassword);
+            user.setId(UUID.randomUUID().toString());
 
-            throw new UserNotFoundException();
-        }
-        catch (RuntimeException runtimeException){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(runtimeException);
-        }
+            AuthenticationDTO authenticationDTO = new AuthenticationDTO(user.getEmail(), user.getPassword());
+            tokenService.generateToken(authenticationDTO);
+
+            userRepository.save(user);
+            this.addIdUserCookie(user.getId());
+
+            EventLog eventLog = new EventLog(0, user, new Date(),"Registro", "Id" + user.getId() + "- Nome" + user.getName() + " - Email" + user.getEmail());
+            eventLogService.create(eventLog);
+            UserDTO userDTO = new UserDTO(user.getAnnotations(), user.getRole());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

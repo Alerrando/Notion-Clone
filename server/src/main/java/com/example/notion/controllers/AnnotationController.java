@@ -18,12 +18,11 @@ public class AnnotationController {
 
     @PostMapping
     public ResponseEntity create(@RequestBody Annotation annotation){
-         annotationService.create(annotation);
-         return ResponseEntity.status(HttpStatus.CREATED).body("Anotação criada com sucesso");
+         return annotationService.create(annotation);
     };
 
-    @PutMapping
-    public ResponseEntity update(@RequestBody List<Annotation> annotations, @RequestBody String title){
-        return annotationService.update(annotations, title);
+    @PutMapping("/{annotationId}")
+    public ResponseEntity update(@RequestBody Annotation annotation, @PathVariable String annotationId){
+        return annotationService.update(annotation, annotationId);
     }
 }

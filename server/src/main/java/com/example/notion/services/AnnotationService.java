@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AnnotationService {
@@ -26,35 +28,44 @@ public class AnnotationService {
     @Autowired
     Util util;
 
-    public void create(Annotation annotation){
-            Optional<User> user = userRepository.findById(util.getIdUserCookie());
-            Map<String, Object> response = new HashMap<>();
+    public ResponseEntity create(Annotation annotation){
+        Optional<User> user = userRepository.findById(util.getIdUserCookie());
+        Map<String, Object> response = new HashMap<>();
 
-            if(user.isEmpty()){
-                throw new UserNotFoundException();
-            }
+        if(user.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UserNotFoundException().getMessage());
+        }
 
-            user.get().getAnnotations().add(annotation);
-            UserDTO userDTO = new UserDTO(user.get().getAnnotations(), user.get().getRole());
-            response.put("user", userDTO);
-            response.put("status", "Página adicionada com sucesso!");
+        user.get().getAnnotations().add(annotation);
+        UserDTO userDTO = new UserDTO(user.get().getAnnotations(), user.get().getRole());
+        response.put("user", userDTO);
+        response.put("status", "Página adicionada com sucesso!");
 
-            userRepository.save(user.get());
+        userRepository.save(user.get());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Anotação criada com sucesso");
     }
 
-    public ResponseEntity update(List<Annotation> annotations, String title){
+    public ResponseEntity update(Annotation annotation, String annotationId){
         try {
             Optional<User> user = userRepository.findById(util.getIdUserCookie());
             Map<String, Object> response = new HashMap<>();
 
             if(user.isEmpty()){
-                throw new UserNotFoundException();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new UserNotFoundException().getMessage());
             }
 
-            user.get().setAnnotations(annotations);
+            Stream<Annotation> annotationsList = user.get().getAnnotations().stream().map((annotation1) -> {
+                if(annotation1.getId() == annotationId){
+                    return annotation;
+                }
+                return annotation1;
+            });
+
+            user.get().setAnnotations(annotationsList.collect(Collectors.toList()));
             UserDTO userDTO = new UserDTO(user.get().getAnnotations(), user.get().getRole());
 
-            eventLogRepository.save(new EventLog(0, user.get(), new Date(), "Editou a página ", "Página" + title + "foi editada"));
+            eventLogRepository.save(new EventLog(0, user.get(), new Date(), "Editou a página ", "Página " + annotation.getTitle() + " foi editada"));
             response.put("user", userDTO);
             response.put("status", "Página atualizada com sucesso!");
             userRepository.save(user.get());

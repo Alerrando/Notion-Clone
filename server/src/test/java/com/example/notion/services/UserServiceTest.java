@@ -54,7 +54,7 @@ public class UserServiceTest {
             AuthenticationDTO authenticationDTO = new AuthenticationDTO("nonexistent@example.com", "password");
             when(userRepository.findUser(authenticationDTO.getEmail())).thenReturn(null);
 
-            userService.findUser(authenticationDTO);
+            userService.login(authenticationDTO);
 
         } catch(UserNotFoundException e){
             Assertions.assertEquals("Usuário não encontrado", e.getMessage());
