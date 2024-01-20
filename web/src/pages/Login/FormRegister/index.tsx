@@ -1,17 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
+import { FaCheck } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
 import { MdOutlineErrorOutline, MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import uuid from "react-uuid";
-import { z } from "zod";
-import { UserValueDefault, useAuth } from "../../../context";
-import { UserProps } from "../../../context/types";
-import { FaCheck } from "react-icons/fa";
-import { styleToast } from "../../../util";
 import { Toaster, toast } from "sonner";
+import { z } from "zod";
+import { useAuth } from "../../../context";
+import { UserProps } from "../../../context/types";
+import { UserValueDefault, styleToast } from "../../../util";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -33,7 +33,7 @@ export function FormRegister({ setPages }: FormRegisterProps) {
   } = useForm<CreateFormRegisterData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { usersAll, setUsersAll, setUser } = useAuth();
+  const { usersAll, setUsersAll, setUser, createEventLogRegister } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -156,6 +156,8 @@ export function FormRegister({ setPages }: FormRegisterProps) {
       const auxUsersAll = usersAll;
       auxUsersAll.push(aux);
       setUsersAll(auxUsersAll);
+
+      createEventLogRegister(aux, "Registro", `Id: ${aux.id} - Nome: ${aux.name} - Email: ${aux.email}`);
 
       setTimeout(() => {
         localStorage.setItem("user-notion", aux.id);

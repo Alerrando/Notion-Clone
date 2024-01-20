@@ -40,7 +40,7 @@ export type TokenUser = {
 
 export type EventLog = {
   id: string;
-  user: UserProps;
+  userId: string;
   timestamp: Date;
   eventType: string;
   eventDetails: string;

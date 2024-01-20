@@ -1,19 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
+import { FaCheck } from "react-icons/fa";
 import { MdOutlineErrorOutline, MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
+import { Toaster, toast } from "sonner";
 import { z } from "zod";
 import { useAuth } from "../../../context";
 import { UserDTOProps, UserProps } from "../../../context/types";
-import { FaCheck } from "react-icons/fa";
 import { styleToast } from "../../../util";
-import { Toaster, toast } from "sonner";
 
 const createFormSchema = z.object({
-  email: z.string().email().nonempty("Digite seu email"),
-  password: z.string().min(3).nonempty("Digite seu senha"),
+  email: z.string({ required_error: "Digite seu email" }).email(),
+  password: z.string({ required_error: "Digite seu senha" }).min(3),
 });
 
 export type CreateFormLoginData = z.infer<typeof createFormSchema>;
@@ -30,7 +30,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
   } = useForm<CreateFormLoginData>({
     resolver: zodResolver(createFormSchema),
   });
-  const { usersAll, setUser } = useAuth();
+  const { usersAll, setUser, createEventLogRegister } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -127,7 +127,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
   );
 
   async function submit(dataLogin: CreateFormLoginData) {
-    const aux: UserDTOProps | undefined = usersAll.find(
+    const aux: UserProps | undefined = usersAll.find(
       (user: UserProps) => user.email === dataLogin.email && user.password === dataLogin.password,
     );
     if (aux) {
@@ -136,6 +136,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
       localStorage.setItem("user-notion", aux.id);
       const userAnnotationId = aux.annotations[0].id;
 
+      createEventLogRegister(aux, "Login", `Id: ${aux.id} - Nome: ${aux.name} - Email: ${aux.email}`);
       setTimeout(() => {
         navigate(`/editor/${userAnnotationId}`);
       }, 5000);
