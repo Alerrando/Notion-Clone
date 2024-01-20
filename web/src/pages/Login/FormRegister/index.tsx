@@ -2,18 +2,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { AiFillFacebook, AiFillLinkedin, AiOutlineGoogle, AiOutlineMail } from "react-icons/ai";
+import { FaCheck } from "react-icons/fa";
 import { IoPersonOutline } from "react-icons/io5";
 import { MdOutlineErrorOutline, MdPassword } from "react-icons/md";
 import { SiNotion } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster, toast } from "sonner";
 import { z } from "zod";
 import { createRegister } from "../../../api";
 import { UserValueDefault, useAuth } from "../../../context";
-import { ToastMessageData, ResponseUser, UserDTOProps, UserProps } from "../../../context/types";
-import { FaCheck } from "react-icons/fa";
+import { ResponseUser, ToastMessageData, UserDTOProps, UserProps } from "../../../context/types";
 import { styleToast } from "../../../util";
-import { Toaster, toast } from "sonner";
 
 const createFormSchema = z.object({
   name: z.string().nonempty("Digite seu nome"),
@@ -146,9 +146,8 @@ export function FormRegister({ setPages }: FormRegisterProps) {
     const responseRegister: ResponseUser | AxiosError = await createRegister(infoUserValues);
     if (!(responseRegister instanceof AxiosError)) {
       const aux: UserDTOProps = {
-        id: responseRegister.data.user.id,
-        annotations: responseRegister.data.user.annotations,
-        role: responseRegister.data.user.role,
+        annotations: responseRegister.data.annotations,
+        role: responseRegister.data.role,
       };
       setUser(aux);
 

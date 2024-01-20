@@ -48,7 +48,6 @@ export function FormLogin({ setPages }: FormLoginProps) {
         };
         setUser(aux);
 
-        localStorage.setItem("user-notion", aux.id);
         const userAnnotationId = response.data.annotations[0].id;
 
         setTimeout(() => {
@@ -56,6 +55,7 @@ export function FormLogin({ setPages }: FormLoginProps) {
         }, 5000);
       }
 
+      console.log(data);
       toastMessageLogin(data);
     },
     onError: (error) => {

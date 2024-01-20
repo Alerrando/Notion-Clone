@@ -63,6 +63,31 @@ main {
   display: none;
 }
 
+.success-toast,
+.error-toast,
+.success-toast > button,
+.error-toast > button {
+  color: #fff !important;
+}
+
+.success-toast {
+  background-color: #16a34a !important;
+  border: #16a34a;
+}
+
+.success-toast > button {
+  background-color: #136d34 !important;
+}
+
+.error-toast {
+  background-color: #dc2626 !important;
+  border: #dc2626;
+}
+
+.error-toast > button {
+  background-color: #791f1f !important;
+}
+
 @media (max-width: 763px) {
   .aside-menu.true {
     background-color: rgba(0, 0, 0, 0.5);

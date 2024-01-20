@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import React, { createContext, useContext, useState } from "react";
 import uuid from "react-uuid";
 import { createAnnotation, createEventLog, getAllUsers, updateAnnotation } from "../api";
@@ -119,13 +120,18 @@ export function UseNotionContext({ children }: IPropsContext) {
   async function updateUserAnnotation(
     newAnnotation: AnnotationType | undefined,
     isNewAnnotation: boolean,
-    annotationsAllUser: AnnotationType[] | undefined,
+    annotationUser: AnnotationType[] | undefined,
   ) {
     let userAux: UserProps = user;
 
-    if (!isNewAnnotation && annotationsAllUser) {
-      const getUserUpdate = await updateAnnotation(annotationsAllUser);
-      userAux.annotations = getUserUpdate.data.user.annotations;
+    if (!isNewAnnotation && annotationUser) {
+      const id = window.location.pathname.split("/");
+      const annotationId: string = user.annotations.find((annotation) => annotation.id === id[id.length - 1])
+        ?.id as string;
+      const getUserUpdate = await updateAnnotation(annotationUser, annotationId);
+      if (!(getUserUpdate instanceof AxiosError)) {
+        userAux.annotations = getUserUpdate.data.user.annotations;
+      }
     }
     const getUsersAllUpdate: UserProps[] = await getAllUsers();
 

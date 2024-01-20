@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
+import { FaCheck } from "react-icons/fa";
+import { MdOutlineErrorOutline } from "react-icons/md";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster, toast } from "sonner";
 import { Aside } from "./components/Aside";
 import { Editor } from "./components/Editor";
 import { ModalAddContent } from "./components/ModalAddContent";
 import { useAuth } from "./context";
 import { AnnotationType } from "./context/types";
-import { Toaster, toast } from "sonner";
-import { MdOutlineErrorOutline } from "react-icons/md";
-import { FaCheck } from "react-icons/fa";
 import { styleToast } from "./util";
 
 export function App() {
@@ -45,20 +45,16 @@ export function App() {
     const currentContent = getHTML;
     const arrayCurrent = getHTML.split(/<(\/?\w+)>/).filter(Boolean);
 
-    const auxAnnotationCurrent: AnnotationType[] = user.annotations.map((annotation) =>
-      annotation.id === id && arrayCurrent
-        ? {
-            ...annotation,
-            title: arrayCurrent[1],
-            content: currentContent,
-            lastUpdate: new Date(),
-          }
-        : annotation,
+    let auxAnnotationCurrent: AnnotationType = user.annotations.find(
+      (annotation) => annotation.id === id && arrayCurrent,
     );
+    auxAnnotationCurrent = {
+      content: currentContent,
+      lastUpdate: new Date(),
+      ...auxAnnotationCurrent,
+    };
 
-    const contentChanged =
-      auxAnnotationCurrent.find((annotation) => annotation.id === id)?.content !==
-      user.annotations.find((annotation) => annotation.id === id)?.content;
+    const contentChanged = user.annotations.find((annotation) => annotation.id === id)?.content;
 
     toastMessage(contentChanged);
 

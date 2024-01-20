@@ -16,6 +16,7 @@ import { useAuth } from "../context";
 import { AnnotationType } from "../context/types";
 import "./Editor.css";
 import { FloatingMenuShow } from "./FloatingMenuShow";
+import { ModalInfoPopover } from "./ModalInfoPopover";
 
 lowlight.registerLanguage("html", html);
 lowlight.registerLanguage("js", js);
@@ -101,7 +102,7 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
           <Popover.Root>
             <Popover.Trigger asChild>
               <button
-                className="rounded-full w-[35px] h-[35px] inline-flex items-center justify-center text-violet11 bg-white shadow-[0_2px_10px] shadow-blackA7 hover:bg-violet3 focus:shadow-[0_0_0_2px] focus:shadow-black cursor-default outline-none"
+                className="rounded-full w-[32px] h-[32px] inline-flex items-center justify-center text-violet11 bg-zinc-100 shadow-lg hover:shadow-[0_0_0_2px] hover:shadow-zinc-800 focus:shadow-[0_0_0_2px] focus:shadow-zinc-800 cursor-default outline-none"
                 aria-label="Update dimensions"
               >
                 <LuSettings2 className="text-black" />
@@ -109,8 +110,11 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
             </Popover.Trigger>
 
             <Popover.Portal>
-              <Popover.Content className="bg-zinc-700 md:bg-zinc-200 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 shadow-black/20 rounded-lg overflow-hidden flex flex-col z-[65]">
-                <div className="group" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()}>
+              <Popover.Content className="h-2/4 bg-zinc-700 md:bg-zinc-50 md:dark:bg-zinc-700/5 py-1 px-1 gap-1 shadow-xl border border-zinc-600 md:border-zinc-200 md:dark:border-zinc-700/md:dark:bg-zinc-700/5 shadow-black/20 rounded-lg overflow-hidden flex flex-col overflow-y-auto z-[65]">
+                <div
+                  className="group flex relative"
+                  onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()}
+                >
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
                       src="https://www.notion.so/images/blocks/text/en-US.png"
@@ -119,23 +123,20 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
                     />
 
                     <FloatingMenuShow.TextInput
-                      texts={[
-                        {
-                          className: "text-sm text-zinc-50",
-                          text: "Text",
-                        },
-
-                        {
-                          className: "text-xs text-zinc-400",
-                          text: "Just start writing with plain text.",
-                        },
-                      ]}
+                      texts={[{ text: "Text" }, { text: "Just start writing with plain text." }]}
                     />
                   </FloatingMenuShow.Root>
+
+                  <ModalInfoPopover
+                    src="https://www.notion.so/images/tooltips/blocks/text/en-US.png"
+                    alt="Text"
+                    spanText="Just start writing with plain text"
+                    classNamePopover="-top-6"
+                  />
                 </div>
 
                 <div
-                  className=""
+                  className="group"
                   onClick={() => {
                     editor.chain().focus().toggleHeading({ level: 1 }).run();
                   }}
@@ -143,24 +144,105 @@ export function Editor({ isNewContent, saveAnnotation }: EditorProps) {
                   <FloatingMenuShow.Root>
                     <FloatingMenuShow.Img
                       src="https://www.notion.so/images/blocks/header.57a7576a.png"
-                      alt="Heading"
+                      alt="Heading 1"
                       className="w-12 border border-zinc-600 rounded"
                     />
 
-                    <FloatingMenuShow.TextInput
-                      texts={[
-                        {
-                          className: "text-sm text-zinc-50",
-                          text: "Heading 1",
-                        },
-
-                        {
-                          className: "text-xs text-zinc-400",
-                          text: "Big section heading.",
-                        },
-                      ]}
-                    />
+                    <FloatingMenuShow.TextInput texts={[{ text: "Heading 1" }, { text: "Big section heading." }]} />
                   </FloatingMenuShow.Root>
+
+                  <ModalInfoPopover
+                    src="https://www.notion.so/images/tooltips/blocks/header/en-US.png"
+                    alt="Heading 1"
+                    spanText="Big section heading."
+                    classNamePopover="top-6"
+                  />
+                </div>
+
+                <div
+                  className="group"
+                  onClick={() => {
+                    editor.chain().focus().toggleHeading({ level: 2 }).run();
+                  }}
+                >
+                  <FloatingMenuShow.Root>
+                    <FloatingMenuShow.Img
+                      src="https://www.notion.so/images/blocks/subheader.9aab4769.png"
+                      alt="Heading 2"
+                      className="w-12 border border-zinc-600 rounded"
+                    />
+
+                    <FloatingMenuShow.TextInput texts={[{ text: "Heading 2" }, { text: "Medium section heading." }]} />
+                  </FloatingMenuShow.Root>
+
+                  <ModalInfoPopover
+                    src="https://www.notion.so/images/tooltips/blocks/sub-header/en-US.png"
+                    alt="Heading 2"
+                    spanText="Medium section heading."
+                    classNamePopover="top-16"
+                  />
+                </div>
+
+                <div
+                  className="group"
+                  onClick={() => {
+                    editor.chain().focus().toggleHeading({ level: 3 }).run();
+                  }}
+                >
+                  <FloatingMenuShow.Root>
+                    <FloatingMenuShow.Img
+                      src="https://www.notion.so/images/blocks/subsubheader.d0ed0bb3.png"
+                      alt="Heading 3"
+                      className="w-12 border border-zinc-600 rounded"
+                    />
+
+                    <FloatingMenuShow.TextInput texts={[{ text: "Heading 3" }, { text: "Low section heading." }]} />
+                  </FloatingMenuShow.Root>
+
+                  <ModalInfoPopover
+                    src="https://www.notion.so/images/tooltips/blocks/subsubheader/en-US.png"
+                    alt="Heading 3"
+                    spanText="Low section heading."
+                    classNamePopover="top-32"
+                  />
+                </div>
+
+                <div className="group" onClick={() => editor.chain().focus().toggleBulletList().run()}>
+                  <FloatingMenuShow.Root>
+                    <FloatingMenuShow.Img
+                      src="https://www.notion.so/images/blocks/bulleted-list.0e87e917.png"
+                      alt="List Bullet"
+                      className="w-12 border border-zinc-600 rounded"
+                    />
+
+                    <FloatingMenuShow.TextInput texts={[{ text: "List Bullet" }, { text: "List bullet create." }]} />
+                  </FloatingMenuShow.Root>
+
+                  <ModalInfoPopover
+                    src="https://www.notion.so/images/tooltips/blocks/bulleted-list/en-US.png"
+                    alt="List Bullet"
+                    spanText="List bullet create."
+                    classNamePopover="top-52"
+                  />
+                </div>
+
+                <div className="group" onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+                  <FloatingMenuShow.Root>
+                    <FloatingMenuShow.Img
+                      src="https://www.notion.so/images/blocks/numbered-list.0406affe.png"
+                      alt="Ordered List"
+                      className="w-12 border border-zinc-600 rounded"
+                    />
+
+                    <FloatingMenuShow.TextInput texts={[{ text: "Ordered List" }, { text: "Ordered List create." }]} />
+                  </FloatingMenuShow.Root>
+
+                  <ModalInfoPopover
+                    src="https://www.notion.so/images/tooltips/blocks/numbered-list/en-US.png"
+                    alt="Ordered Bullet"
+                    spanText="Ordered bullet create."
+                    classNamePopover="top-64"
+                  />
                 </div>
               </Popover.Content>
             </Popover.Portal>

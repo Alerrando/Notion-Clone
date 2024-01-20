@@ -14,6 +14,7 @@ import { useAuth } from "../../context";
 import { AnnotationType } from "../../context/types";
 import { AsideMenu } from "./AsideMenu";
 import { SkeletonAside } from "./SkeletonAside";
+import { ArchiveHistoryModal } from "./ArchiveHistoryModal";
 
 export type MenuListType = {
   name: string;
@@ -30,6 +31,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
   const [menu, setMenu] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [isFixed, setIsFixed] = useState<boolean>(false);
+  const [archiveHistory, setArchiveHistory] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const menuList: MenuListType[] = [
@@ -42,7 +44,7 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
     {
       name: "Mundaças Recentes",
       icon: BiTime,
-      openMenuList: () => {},
+      openMenuList: () => setArchiveHistory(!archiveHistory),
     },
 
     {
@@ -136,6 +138,8 @@ export function Aside({ handleChangeValuePageModal }: AsideProps) {
           </div>
         </div>
       </div>
+
+      {archiveHistory && <ArchiveHistoryModal />}
     </>
   );
 

@@ -18,7 +18,7 @@ export function getAllUsers() {
 
 export function getLogin(user: AuthenticationDTO) {
   const aux = axios
-    .post(`${api}/user/find`, user, {
+    .post(`${api}/user/login`, user, {
       withCredentials: true,
     })
     .then((response) => response)
@@ -51,10 +51,13 @@ export function createAnnotation(annotations: AnnotationType) {
   return aux;
 }
 
-export function updateAnnotation(annotations: AnnotationType[]) {
+export function updateAnnotation(annotations: AnnotationType, annotationId: string) {
   const aux = axios
-    .put(`${api}/annotation`, annotations, {
+    .put(`${api}/annotation/${annotationId}`, JSON.stringify(annotations), {
       withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
     .then((response) => response)
     .catch((error) => error);
